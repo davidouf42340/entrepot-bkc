@@ -6,161 +6,316 @@
 <title>Bâan Kumlai — Export Entrepôt</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-#lock-screen {
-  position: fixed; inset: 0; z-index: 9999;
-  background: #F7F6F3;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Sans', sans-serif;
-}
-.lock-card {
-  background: #fff; border: 1px solid #E5E2DA; border-radius: 16px;
-  padding: 40px 36px; width: 340px; text-align: center;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-}
-.lock-logo { font-size: 28px; margin-bottom: 6px; }
-.lock-title { font-size: 17px; font-weight: 600; color: #2D5016; margin-bottom: 4px; letter-spacing: -0.02em; }
-.lock-sub { font-size: 13px; color: #9E9A93; margin-bottom: 24px; }
-.lock-card input[type=password] {
-  width: 100%; font-family: 'DM Sans', sans-serif; font-size: 15px;
-  border: 1.5px solid #D4D0C8; border-radius: 8px; padding: 10px 14px;
-  margin-bottom: 12px; outline: none; text-align: center; letter-spacing: 0.1em;
-  background: #F7F6F3; color: #1A1816; transition: border-color 0.15s;
-}
-.lock-card input[type=password]:focus { border-color: #4A7C22; background: #fff; }
-.lock-card button {
-  width: 100%; background: #2D5016; color: white; border: none; border-radius: 8px;
-  padding: 11px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
-  cursor: pointer; transition: background 0.15s;
-}
-.lock-card button:hover { background: #234010; }
-.lock-error { font-size: 12px; color: #C0392B; margin-top: 10px; display: none; }
-#app-wrap { display: none; }
+/* ── Lock ── */
+#lock-screen { position:fixed;inset:0;z-index:9999;background:#F7F6F3;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif; }
+.lock-card { background:#fff;border:1px solid #E5E2DA;border-radius:16px;padding:40px 36px;width:340px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+.lock-logo { font-size:28px;margin-bottom:6px; }
+.lock-title { font-size:17px;font-weight:600;color:#2D5016;margin-bottom:4px;letter-spacing:-0.02em; }
+.lock-sub { font-size:13px;color:#9E9A93;margin-bottom:24px; }
+.lock-card input[type=password] { width:100%;font-family:'DM Sans',sans-serif;font-size:15px;border:1.5px solid #D4D0C8;border-radius:8px;padding:10px 14px;margin-bottom:12px;outline:none;text-align:center;letter-spacing:0.1em;background:#F7F6F3;color:#1A1816;transition:border-color 0.15s; }
+.lock-card input[type=password]:focus { border-color:#4A7C22;background:#fff; }
+.lock-card .lock-btn { width:100%;background:#2D5016;color:white;border:none;border-radius:8px;padding:11px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s; }
+.lock-card .lock-btn:hover { background:#234010; }
+.lock-error { font-size:12px;color:#C0392B;margin-top:10px;display:none; }
+#app-wrap { display:none; }
+
+/* ── Root ── */
 :root {
-  --bg: #F7F6F3; --surface: #FFFFFF; --surface2: #F2F0EC;
-  --border: #E5E2DA; --border2: #D4D0C8;
-  --text: #1A1816; --text2: #6B6760; --text3: #9E9A93;
-  --accent: #2D5016; --accent-light: #EBF2E3; --accent-mid: #4A7C22;
-  --gold: #B8860B; --gold-light: #FDF8E7;
-  --red: #C0392B; --red-light: #FDECEA;
-  --blue: #1A5276; --blue-light: #EAF2F8;
-  --radius: 8px; --radius-lg: 12px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+  --bg:#F7F6F3;--surface:#FFFFFF;--surface2:#F2F0EC;
+  --border:#E5E2DA;--border2:#D4D0C8;
+  --text:#1A1816;--text2:#6B6760;--text3:#9E9A93;
+  --accent:#2D5016;--accent-light:#EBF2E3;--accent-mid:#4A7C22;
+  --gold:#B8860B;--gold-light:#FDF8E7;
+  --red:#C0392B;--red-light:#FDECEA;
+  --blue:#1A5276;--blue-light:#EAF2F8;
+  --orange:#E67E22;--orange-light:#FEF5EC;
+  --radius:8px;--radius-lg:12px;
+  --shadow-lg:0 4px 16px rgba(0,0,0,0.10);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; min-height: 100vh; }
-.app-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-.app-logo { font-size: 15px; font-weight: 600; color: var(--accent); letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
-.app-logo span { color: var(--text3); font-weight: 400; font-size: 13px; }
-.layout { display: grid; grid-template-columns: 1fr 380px; gap: 0; height: calc(100vh - 56px); }
-.panel-left { overflow-y: auto; padding: 20px 20px 20px 24px; border-right: 1px solid var(--border); }
-.panel-right { overflow-y: auto; background: var(--surface); display: flex; flex-direction: column; }
-.panel-right-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 10; }
-.panel-right-body { flex: 1; overflow-y: auto; padding: 12px 20px; }
-.panel-right-footer { padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface); position: sticky; bottom: 0; }
-.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); }
-.upload-wrap { background: var(--surface); border: 1.5px dashed var(--border2); border-radius: var(--radius-lg); padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.15s; margin-bottom: 20px; }
-.upload-wrap:hover, .upload-wrap.drag { border-color: var(--accent-mid); background: var(--accent-light); }
-.upload-icon { font-size: 32px; margin-bottom: 8px; }
-.upload-wrap p { font-size: 13px; color: var(--text2); }
-.upload-wrap strong { color: var(--text); }
-.order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 8px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
-.order-card.selected { border-color: var(--accent-mid); box-shadow: 0 0 0 2px var(--accent-light); }
-.order-card-header { display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; user-select: none; }
-.order-card-header:hover { background: var(--surface2); }
-.order-check { width: 18px; height: 18px; border: 1.5px solid var(--border2); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; font-size: 11px; color: transparent; }
-.order-card.selected .order-check { background: var(--accent); border-color: var(--accent); color: white; }
-.order-num { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
-.order-name { font-size: 13px; color: var(--text); flex: 1; }
-.order-meta { font-size: 11px; color: var(--text3); }
-.order-total { font-size: 13px; font-weight: 600; color: var(--text); }
-.badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; }
-.badge-trk { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
-.badge-coc { background: var(--blue-light); color: var(--blue); border: 1px solid #BDD6F0; }
-.badge-rel { background: var(--gold-light); color: var(--gold); border: 1px solid #EDD97A; }
-.order-items { border-top: 1px solid var(--border); padding: 8px 14px 10px 44px; display: none; }
-.order-card.expanded .order-items { display: block; }
-.item-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-.item-row:last-child { border-bottom: none; }
-.item-sku { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); min-width: 120px; }
-.item-name { flex: 1; color: var(--text); }
-.item-qty { font-weight: 600; color: var(--text2); min-width: 30px; text-align: right; }
-.item-price { color: var(--text3); min-width: 50px; text-align: right; font-size: 12px; }
-.extra-lines { padding: 6px 0 2px; }
-.extra-line { display: flex; align-items: center; gap: 6px; padding: 4px 0; animation: fadeIn 0.15s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-.extra-line input { font-family: 'DM Sans', sans-serif; font-size: 12px; border: 1px solid var(--border2); border-radius: var(--radius); padding: 5px 8px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
-.extra-line input:focus { border-color: var(--accent-mid); }
-.extra-line .inp-sku { width: 130px; font-family: 'DM Mono', monospace; font-size: 11px; }
-.extra-line .inp-titre { flex: 1; }
-.extra-line .inp-qty { width: 52px; text-align: center; }
-.extra-btn-del { width: 22px; height: 22px; border: none; background: none; color: var(--text3); cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; transition: color 0.1s, background 0.1s; }
-.extra-btn-del:hover { color: var(--red); background: var(--red-light); }
-.add-line-btn { font-size: 12px; color: var(--accent-mid); background: none; border: 1px dashed var(--accent-mid); border-radius: var(--radius); padding: 4px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; transition: background 0.15s; }
-.add-line-btn:hover { background: var(--accent-light); }
-button, .btn { font-family: 'DM Sans', sans-serif; cursor: pointer; border-radius: var(--radius); font-size: 13px; font-weight: 500; border: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s; padding: 7px 14px; }
-.btn-primary { background: var(--accent); color: white; }
-.btn-primary:hover { background: #234010; }
-.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border2); }
-.btn-outline:hover { background: var(--surface2); }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
-.btn-all { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
-.btn-all:hover { background: var(--border); }
-.summary-empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; }
-.summary-order { border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden; }
-.summary-order-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 12px; }
-.summary-order-head strong { font-family: 'DM Mono', monospace; font-size: 12px; }
-.summary-items { padding: 6px 12px; }
-.summary-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--border); }
-.summary-item:last-child { border-bottom: none; }
-.summary-item .sku { font-family: 'DM Mono', monospace; color: var(--text3); font-size: 11px; width: 110px; flex-shrink: 0; }
-.summary-item .name { flex: 1; color: var(--text); }
-.summary-item .qty { font-weight: 600; color: var(--text2); }
-.summary-item.extra { background: var(--accent-light); margin: 0 -12px; padding: 4px 12px; }
-.summary-item.extra .sku { color: var(--accent); }
-.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-.stat-box { background: var(--surface2); border-radius: var(--radius); padding: 10px 12px; text-align: center; }
-.stat-box .val { font-size: 22px; font-weight: 600; color: var(--text); line-height: 1.2; }
-.stat-box .lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg); z-index: 999; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; }
-.toast.show { transform: translateX(-50%) translateY(0); }
-.config-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
-.config-field { display: flex; flex-direction: column; gap: 3px; }
-.config-field label { font-size: 11px; color: var(--text3); }
-.config-field input { font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border2); border-radius: var(--radius); padding: 6px 10px; background: var(--bg); color: var(--text); outline: none; width: 80px; }
-.config-field input:focus { border-color: var(--accent-mid); }
-.config-field input.wide { width: 120px; }
+* { box-sizing:border-box;margin:0;padding:0; }
+body { font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh; }
+
+/* ── Layout ── */
+.app-header { background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100; }
+.app-logo { font-size:15px;font-weight:600;color:var(--accent);letter-spacing:-0.02em;display:flex;align-items:center;gap:8px; }
+.app-logo span { color:var(--text3);font-weight:400;font-size:13px; }
+.layout { display:grid;grid-template-columns:1fr 360px;height:calc(100vh - 56px); }
+.panel-left { overflow-y:auto;padding:16px 16px 16px 20px;border-right:1px solid var(--border); }
+.panel-right { background:var(--surface);display:flex;flex-direction:column;overflow:hidden; }
+.panel-right-header { padding:14px 18px 10px;border-bottom:1px solid var(--border);flex-shrink:0; }
+.panel-right-body { flex:1;overflow-y:auto;padding:10px 18px; }
+.panel-right-footer { padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0; }
+
+/* ── Titles ── */
+.section-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:10px; }
+.section-title { font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3); }
+
+/* ── Upload ── */
+.upload-wrap { background:var(--surface);border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:28px 20px;text-align:center;cursor:pointer;transition:all 0.15s;margin-bottom:14px; }
+.upload-wrap:hover,.upload-wrap.drag { border-color:var(--accent-mid);background:var(--accent-light); }
+.upload-icon { font-size:28px;margin-bottom:6px; }
+.upload-wrap p { font-size:13px;color:var(--text2); }
+.upload-wrap strong { color:var(--text); }
+
+/* ── Buttons ── */
+button,.btn { font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:var(--radius);font-size:13px;font-weight:500;border:none;display:inline-flex;align-items:center;gap:5px;transition:all 0.15s;padding:7px 13px; }
+.btn-primary { background:var(--accent);color:white; }
+.btn-primary:hover { background:#234010; }
+.btn-primary:disabled { opacity:0.4;cursor:not-allowed; }
+.btn-outline { background:transparent;color:var(--text);border:1px solid var(--border2); }
+.btn-outline:hover { background:var(--surface2); }
+.btn-danger { background:transparent;color:var(--red);border:1px solid #F1948A; }
+.btn-danger:hover { background:var(--red-light); }
+.btn-sav { background:var(--orange-light);color:var(--orange);border:1px solid #F0B27A; }
+.btn-sav:hover { background:#FDEBD0; }
+.btn-sm { padding:5px 10px;font-size:12px; }
+.btn-xs { padding:3px 8px;font-size:11px; }
+.btn-all { background:var(--surface2);color:var(--text2);border:1px solid var(--border); }
+.btn-all:hover { background:var(--border); }
+
+/* ── Badges ── */
+.badge { display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.02em;white-space:nowrap; }
+.badge-trk { background:var(--surface2);color:var(--text2);border:1px solid var(--border2); }
+.badge-coc,.badge-reg { background:var(--blue-light);color:var(--blue);border:1px solid #BDD6F0; }
+.badge-rel,.badge-so1,.badge-dpr,.badge-h2s,.badge-hr3,.badge-rco { background:var(--gold-light);color:var(--gold);border:1px solid #EDD97A; }
+.badge-dpd { background:#F4ECF7;color:#6C3483;border:1px solid #D7BDE2; }
+.badge-col { background:#E8F8F5;color:#0E6655;border:1px solid #A2D9CE; }
+.badge-hex { background:var(--red-light);color:var(--red);border:1px solid #F1948A; }
+.badge-sav { background:var(--orange-light);color:var(--orange);border:1px solid #F0B27A; }
+.badge-home { background:#EBF5FB;color:#1A5276;border:1px solid #AED6F1; }
+
+/* ── Order cards ── */
+.order-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:7px;overflow:hidden;transition:border-color 0.15s,box-shadow 0.15s; }
+.order-card.selected { border-color:var(--accent-mid);box-shadow:0 0 0 2px var(--accent-light); }
+.order-card.is-sav { border-color:#F0B27A; }
+.order-card.is-sav.selected { border-color:var(--orange);box-shadow:0 0 0 2px var(--orange-light); }
+.order-card-header { display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;user-select:none; }
+.order-card-header:hover { background:var(--surface2); }
+.order-check { width:17px;height:17px;border:1.5px solid var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;font-size:10px;color:transparent; }
+.order-card.selected .order-check { background:var(--accent);border-color:var(--accent);color:white; }
+.order-card.is-sav.selected .order-check { background:var(--orange);border-color:var(--orange); }
+.order-num { font-family:'DM Mono',monospace;font-size:12px;font-weight:500;flex-shrink:0; }
+.order-name { font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.order-meta { font-size:11px;color:var(--text3);flex-shrink:0; }
+.order-total { font-size:13px;font-weight:600;flex-shrink:0; }
+.arrow { color:var(--text3);font-size:15px;flex-shrink:0;transition:transform 0.15s; }
+.order-card.expanded .arrow { transform:rotate(90deg); }
+
+/* ── Transport select ── */
+.transport-select { font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;border:1px solid var(--border2);border-radius:6px;padding:3px 6px;background:var(--bg);color:var(--text);outline:none;cursor:pointer;flex-shrink:0; }
+.transport-select:focus { border-color:var(--accent-mid); }
+
+/* ── Order items ── */
+.order-items { border-top:1px solid var(--border);padding:6px 12px 10px 38px;display:none; }
+.order-card.expanded .order-items { display:block; }
+.item-row { display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px; }
+.item-row:last-child { border-bottom:none; }
+.item-sku { font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);min-width:110px;flex-shrink:0; }
+.item-name { flex:1;color:var(--text); }
+.item-qty { font-weight:600;color:var(--text2);min-width:28px;text-align:right;flex-shrink:0; }
+.item-price { color:var(--text3);min-width:48px;text-align:right;font-size:11px;flex-shrink:0; }
+
+/* ── Extra lines ── */
+.extra-lines { padding:4px 0 2px; }
+.extra-line { display:flex;align-items:center;gap:5px;padding:3px 0;animation:fadeIn 0.15s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)} }
+.extra-line input { font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--border2);border-radius:var(--radius);padding:4px 7px;background:var(--bg);color:var(--text);outline:none;transition:border-color 0.15s; }
+.extra-line input:focus { border-color:var(--accent-mid); }
+.inp-sku { width:120px;font-family:'DM Mono',monospace;font-size:11px; }
+.inp-titre { flex:1; }
+.inp-qty { width:48px;text-align:center; }
+.extra-btn-del { width:20px;height:20px;border:none;background:none;color:var(--text3);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:color 0.1s,background 0.1s; }
+.extra-btn-del:hover { color:var(--red);background:var(--red-light); }
+.add-line-btn { font-size:11px;color:var(--accent-mid);background:none;border:1px dashed var(--accent-mid);border-radius:var(--radius);padding:3px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;margin-top:4px;transition:background 0.15s; }
+.add-line-btn:hover { background:var(--accent-light); }
+
+/* ── SAV Modal ── */
+.modal-bg { position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:500;display:none;align-items:center;justify-content:center; }
+.modal-bg.open { display:flex; }
+.modal { background:var(--surface);border-radius:var(--radius-lg);width:560px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg); }
+.modal-header { padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+.modal-header h3 { font-size:15px;font-weight:600; }
+.modal-close { width:28px;height:28px;border:none;background:none;font-size:20px;cursor:pointer;color:var(--text3);border-radius:var(--radius);display:flex;align-items:center;justify-content:center; }
+.modal-close:hover { background:var(--surface2);color:var(--text); }
+.modal-body { padding:16px 20px; }
+.modal-footer { padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px; }
+.form-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px; }
+.form-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
+.form-field { display:flex;flex-direction:column;gap:3px; }
+.form-field.full { grid-column:1/-1; }
+.form-field label { font-size:11px;color:var(--text3);font-weight:500; }
+.form-field input,.form-field select { font-family:'DM Sans',sans-serif;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius);padding:7px 10px;background:var(--bg);color:var(--text);outline:none;transition:border-color 0.15s; }
+.form-field input:focus,.form-field select:focus { border-color:var(--accent-mid);background:#fff; }
+.form-section-label { font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text3);margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border); }
+.sav-items { margin-bottom:8px; }
+.sav-item-row { display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border); }
+.sav-item-row:last-child { border-bottom:none; }
+.sav-item-row input { font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--border2);border-radius:var(--radius);padding:5px 8px;background:var(--bg);color:var(--text);outline:none; }
+.sav-item-row input:focus { border-color:var(--accent-mid); }
+.sav-sku { width:120px;font-family:'DM Mono',monospace;font-size:11px; }
+.sav-titre { flex:1; }
+.sav-qty { width:52px;text-align:center; }
+
+/* ── Stats ── */
+.stats-row { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px; }
+.stat-box { background:var(--surface2);border-radius:var(--radius);padding:9px 10px;text-align:center; }
+.stat-box .val { font-size:20px;font-weight:600;line-height:1.2; }
+.stat-box .lbl { font-size:11px;color:var(--text3);margin-top:1px; }
+
+/* ── Summary right ── */
+.summary-empty { text-align:center;padding:32px 16px;color:var(--text3);font-size:13px; }
+.summary-order { border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:8px;overflow:hidden; }
+.summary-order.is-sav { border-color:#F0B27A; }
+.summary-order-head { display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:12px;gap:6px; }
+.summary-order.is-sav .summary-order-head { background:var(--orange-light); }
+.summary-order-head strong { font-family:'DM Mono',monospace;font-size:11px;flex-shrink:0; }
+.summary-order-head .client { flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.summary-items { padding:5px 10px; }
+.summary-item { display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;border-bottom:1px solid var(--border); }
+.summary-item:last-child { border-bottom:none; }
+.summary-item .sku { font-family:'DM Mono',monospace;color:var(--text3);font-size:10px;width:100px;flex-shrink:0; }
+.summary-item .name { flex:1;color:var(--text); }
+.summary-item .qty { font-weight:600;color:var(--text2);flex-shrink:0; }
+.summary-item.extra { background:var(--accent-light);margin:0 -10px;padding:3px 10px; }
+.summary-item.extra .sku { color:var(--accent); }
+
+/* ── Config ── */
+.config-row { display:flex;gap:8px;align-items:center;flex-wrap:wrap; }
+.config-field { display:flex;flex-direction:column;gap:2px; }
+.config-field label { font-size:10px;color:var(--text3); }
+.config-field input { font-family:'DM Sans',sans-serif;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius);padding:5px 9px;background:var(--bg);color:var(--text);outline:none;width:75px; }
+.config-field input.wide { width:110px; }
+.config-field input:focus { border-color:var(--accent-mid); }
+
+/* ── Toast ── */
+.toast { position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--text);color:white;padding:9px 18px;border-radius:20px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);z-index:999;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* ── Toolbar ── */
+.toolbar { display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap; }
 </style>
 </head>
 <body>
 
+<!-- Lock -->
 <div id="lock-screen">
   <div class="lock-card">
     <div class="lock-logo">🌿</div>
     <div class="lock-title">Bâan Kumlai</div>
     <div class="lock-sub">Export Entrepôt — accès restreint</div>
     <input type="password" id="pwd-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkPwd()">
-    <button onclick="checkPwd()">Accéder →</button>
+    <button class="lock-btn" onclick="checkPwd()">Accéder →</button>
     <div class="lock-error" id="lock-error">Mot de passe incorrect</div>
   </div>
 </div>
 
+<!-- App -->
 <div id="app-wrap">
 
+<!-- SAV Modal -->
+<div class="modal-bg" id="sav-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📦 Nouvelle commande SAV / manuelle</h3>
+      <button class="modal-close" onclick="closeSavModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-section-label">Référence commande</div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Numéro de commande *</label>
+          <input type="text" id="sav-ref" placeholder="ex. SAV-001, SAV-2024-05…">
+        </div>
+        <div class="form-field">
+          <label>Date</label>
+          <input type="date" id="sav-date">
+        </div>
+      </div>
+
+      <div class="form-section-label">Destinataire</div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Prénom *</label>
+          <input type="text" id="sav-prenom" placeholder="Marie">
+        </div>
+        <div class="form-field">
+          <label>Nom *</label>
+          <input type="text" id="sav-nom" placeholder="Dupont">
+        </div>
+        <div class="form-field">
+          <label>Téléphone</label>
+          <input type="text" id="sav-tel" placeholder="+33 6 12 34 56 78">
+        </div>
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" id="sav-email" placeholder="email@exemple.fr">
+        </div>
+        <div class="form-field">
+          <label>Société / Chez</label>
+          <input type="text" id="sav-societe" placeholder="">
+        </div>
+      </div>
+
+      <div class="form-section-label">Adresse de livraison</div>
+      <div class="form-grid">
+        <div class="form-field full">
+          <label>Adresse ligne 1 *</label>
+          <input type="text" id="sav-addr1" placeholder="12 rue des Fleurs">
+        </div>
+        <div class="form-field full">
+          <label>Adresse ligne 2</label>
+          <input type="text" id="sav-addr2" placeholder="Bât A, Apt 3">
+        </div>
+        <div class="form-field">
+          <label>Code postal *</label>
+          <input type="text" id="sav-zip" placeholder="75001">
+        </div>
+        <div class="form-field">
+          <label>Ville *</label>
+          <input type="text" id="sav-city" placeholder="Paris">
+        </div>
+        <div class="form-field">
+          <label>Pays</label>
+          <input type="text" id="sav-country" placeholder="FR" value="FR">
+        </div>
+        <div class="form-field">
+          <label>Transporteur *</label>
+          <select id="sav-transport">
+            <option value="TRK">TRK — Livraison suivie domicile</option>
+            <option value="Home Regular">Home Regular — Livraison suivie domicile</option>
+            <option value="REG">REG — Contre signature domicile</option>
+            <option value="DPD">DPD — Domicile</option>
+            <option value="COL">COL — Colissimo suivi</option>
+            <option value="COC">COC — Colissimo contre signature</option>
+            <option value="HEX">HEX — Chrono13 / Express</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section-label">Articles</div>
+      <div class="sav-items" id="sav-items-list"></div>
+      <button class="add-line-btn" onclick="addSavItem()" style="margin-bottom:4px;">+ Ajouter un article</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeSavModal()">Annuler</button>
+      <button class="btn btn-sav" onclick="saveSavOrder()">✅ Ajouter la commande</button>
+    </div>
+  </div>
+</div>
+
+<!-- Known SKUs -->
 <datalist id="known-skus">
-  <option value="SAISINR">Fil Rouge Sacré Bouddhiste</option>
-  <option value="JONCOR_S">Jonc Bouddhiste Or S</option>
-  <option value="JONCOR_M">Jonc Bouddhiste Or M</option>
-  <option value="JONCOR_L">Jonc Bouddhiste Or L</option>
-  <option value="JONCARGENT_S">Jonc Bouddhiste Argent S</option>
-  <option value="JONCARGENT_M">Jonc Bouddhiste Argent M</option>
-  <option value="JONC_ROSEPOUDRE_M">Jonc Bouddhiste Rose Poudré M</option>
-  <option value="JONC_VERTANTIQUE_M">Jonc Bouddhiste Vert Antique M</option>
-  <option value="JONCTORSADOR_M">Jonc Bouddhiste Torsadé Or M</option>
-  <option value="BAGUEOR_M">Bague Bouddhiste Or M</option>
-  <option value="PACKSPIRITJ">Ensemble Spirituel Bouddhiste</option>
+  <option value="SAISINR">
+  <option value="JONCOR_S">
+  <option value="JONCOR_M">
+  <option value="JONCOR_L">
+  <option value="JONCARGENT_S">
+  <option value="JONCARGENT_M">
+  <option value="JONC_ROSEPOUDRE_M">
+  <option value="JONC_VERTANTIQUE_M">
+  <option value="JONCTORSADOR_M">
+  <option value="BAGUEOR_M">
+  <option value="PACKSPIRITJ">
 </datalist>
 
 <div id="sku-titles" style="display:none">
@@ -177,10 +332,11 @@ button, .btn { font-family: 'DM Sans', sans-serif; cursor: pointer; border-radiu
   <span data-sku="PACKSPIRITJ" data-titre="Ensemble Spirituel Bouddhiste – Yantra + Bracelet Rouge Sai Sin + Prière"></span>
 </div>
 
+<!-- Header -->
 <header class="app-header">
   <div class="app-logo">🌿 Bâan Kumlai <span>/ Export Entrepôt</span></div>
-  <div style="display:flex; align-items:center; gap:10px;">
-    <div class="config-row" style="margin:0;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="config-row">
       <div class="config-field"><label>Donneur d'ordre</label><input type="text" id="cfg-donneur" value="11ORS" class="wide"></div>
       <div class="config-field"><label>Vendeur</label><input type="text" id="cfg-vendeur" value="11ORS"></div>
       <div class="config-field"><label>Seuil COC (€)</label><input type="number" id="cfg-seuil" value="75" min="0"></div>
@@ -193,38 +349,40 @@ button, .btn { font-family: 'DM Sans', sans-serif; cursor: pointer; border-radiu
 </header>
 
 <div class="layout">
+  <!-- LEFT -->
   <div class="panel-left">
     <div id="upload-zone" class="upload-wrap" onclick="document.getElementById('file-input').click()">
       <div class="upload-icon">📦</div>
       <p><strong>Déposez votre export Shopify ici</strong></p>
       <p>ou cliquez pour choisir le fichier CSV</p>
     </div>
-    <div id="orders-area" style="display:none">
-      <div class="section-head">
-        <span class="section-title" id="orders-count-label">Commandes</span>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-all btn-sm" onclick="selectAll()">Tout sélectionner</button>
-          <button class="btn btn-outline btn-sm" onclick="selectNone()">Tout désélectionner</button>
-        </div>
+
+    <div id="orders-area">
+      <div class="toolbar">
+        <span class="section-title" id="orders-count-label" style="margin-right:4px;">Commandes</span>
+        <button class="btn btn-all btn-sm" onclick="selectAll()">Tout sélectionner</button>
+        <button class="btn btn-outline btn-sm" onclick="selectNone()">Tout désélectionner</button>
+        <button class="btn btn-sav btn-sm" onclick="openSavModal()" style="margin-left:auto;">+ SAV / Manuel</button>
       </div>
       <div id="orders-list"></div>
     </div>
   </div>
 
+  <!-- RIGHT -->
   <div class="panel-right">
     <div class="panel-right-header">
-      <div class="section-title" style="margin-bottom:10px;">Récapitulatif export</div>
+      <div class="section-title" style="margin-bottom:8px;">Récapitulatif export</div>
       <div class="stats-row">
         <div class="stat-box"><div class="val" id="stat-sel">0</div><div class="lbl">sélectionnées</div></div>
-        <div class="stat-box"><div class="val" id="stat-trk">0</div><div class="lbl">via TRK</div></div>
-        <div class="stat-box"><div class="val" id="stat-coc">0</div><div class="lbl">via COC</div></div>
+        <div class="stat-box"><div class="val" id="stat-trk">0</div><div class="lbl">TRK / autres</div></div>
+        <div class="stat-box"><div class="val" id="stat-coc">0</div><div class="lbl">COC / REG</div></div>
       </div>
     </div>
     <div class="panel-right-body" id="summary-body">
       <div class="summary-empty">Sélectionnez des commandes pour les inclure dans l'export</div>
     </div>
     <div class="panel-right-footer">
-      <button class="btn btn-primary" id="btn-generate" onclick="generateAndDownload()" disabled style="width:100%;justify-content:center;padding:11px;">
+      <button class="btn btn-primary" id="btn-generate" onclick="generateAndDownload()" disabled style="width:100%;justify-content:center;padding:10px;">
         ⬇️ Générer et télécharger le fichier
       </button>
     </div>
@@ -235,19 +393,37 @@ button, .btn { font-family: 'DM Sans', sans-serif; cursor: pointer; border-radiu
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
-let allOrders = {}, orderList = [], selected = new Set();
+// ── Constants ──
+const TRANSPORT_OPTIONS = [
+  { code:'TRK',        label:'TRK — Livraison suivie domicile' },
+  { code:'Home Regular', label:'Home Regular — Livraison suivie domicile' },
+  { code:'REG',        label:'REG — Contre signature domicile' },
+  { code:'DPD',        label:'DPD — Domicile' },
+  { code:'COL',        label:'COL — Colissimo suivi' },
+  { code:'COC',        label:'COC — Colissimo contre signature' },
+  { code:'HEX',        label:'HEX — Chrono13 / Express' },
+];
+
 const skuTitles = {};
 document.querySelectorAll('#sku-titles span').forEach(el => { skuTitles[el.dataset.sku] = el.dataset.titre; });
 
+// ── State ──
+let allOrders = {}, orderList = [], selected = new Set();
+let savItems = []; // items in the SAV modal
+
+// ── File handling ──
 const fileInput = document.getElementById('file-input');
 const uploadZone = document.getElementById('upload-zone');
 fileInput.addEventListener('change', e => { if (e.target.files[0]) parseCSV(e.target.files[0]); });
 uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
 uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
-uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag'); if (e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]); });
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('drag');
+  if (e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]);
+});
 
 function parseCSV(file) {
-  Papa.parse(file, { header: true, skipEmptyLines: true,
+  Papa.parse(file, { header:true, skipEmptyLines:true,
     complete(res) {
       if (!res.data.length || !res.data[0]['Name']) { toast('❌ Fichier invalide'); return; }
       buildOrders(res.data);
@@ -257,27 +433,37 @@ function parseCSV(file) {
 }
 
 function buildOrders(rows) {
-  allOrders = {}; orderList = []; selected = new Set();
+  // Keep existing SAV orders
+  const savOrders = orderList.filter(n => allOrders[n] && allOrders[n].isSav);
+  const newAllOrders = {};
+  const newOrderList = [];
+  savOrders.forEach(n => { newAllOrders[n] = allOrders[n]; newOrderList.push(n); });
+
   rows.forEach(r => {
     const n = r['Name'];
-    if (!allOrders[n]) { allOrders[n] = { header: r, items: [], extraLines: [] }; orderList.push(n); }
-    allOrders[n].items.push(r);
+    if (!newAllOrders[n]) { newAllOrders[n] = { header:r, items:[], extraLines:[], transportOverride:null, isSav:false }; newOrderList.push(n); }
+    newAllOrders[n].items.push(r);
   });
-  orderList.forEach(n => { if ((allOrders[n].header['Fulfillment Status']||'').toLowerCase() !== 'fulfilled') selected.add(n); });
+
+  allOrders = newAllOrders; orderList = newOrderList; selected = new Set();
+  orderList.forEach(n => {
+    if (allOrders[n].isSav) { selected.add(n); return; }
+    if ((allOrders[n].header['Fulfillment Status']||'').toLowerCase() !== 'fulfilled') selected.add(n);
+  });
   renderOrders(); updateSummary();
-  document.getElementById('upload-zone').style.display = 'none';
-  document.getElementById('orders-area').style.display = 'block';
-  toast(`✅ ${orderList.length} commandes importées`);
+  uploadZone.style.display = 'none';
+  toast(`✅ ${rows.length > 0 ? orderList.filter(n=>!allOrders[n].isSav).length : 0} commandes importées`);
 }
 
-function getTransporteur(order) {
+// ── Transport ──
+function autoTransport(order) {
   const seuil = parseFloat(document.getElementById('cfg-seuil').value) || 75;
   const total = parseFloat(order.header['Total'] || order.header['Subtotal'] || 0);
   if (total >= seuil) return 'COC';
-  const m = (order.header['Shipping Method'] || '').toLowerCase();
+  const m = (order.header['Shipping Method']||'').toLowerCase();
   if (m.includes('mondial') || (m.includes('relais') && !m.includes('colis'))) return 'REL';
   if (m.includes('relais colis')) return 'RCO';
-  if (m.includes('colissimo') && (m.includes('signature') || m.includes('contre'))) return 'COC';
+  if (m.includes('colissimo') && (m.includes('signature')||m.includes('contre'))) return 'COC';
   if (m.includes('colissimo') && m.includes('retrait')) return 'SO1';
   if (m.includes('colissimo')) return 'COL';
   if (m.includes('dpd') && m.includes('retrait')) return 'DPR';
@@ -288,72 +474,122 @@ function getTransporteur(order) {
   return 'TRK';
 }
 
-function badgeForTransporteur(code) {
-  if (code === 'COC') return `<span class="badge badge-coc">${code}</span>`;
-  if (['REL','RCO','SO1','DPR','H2S','HR3'].includes(code)) return `<span class="badge badge-rel">${code}</span>`;
-  return `<span class="badge badge-trk">${code}</span>`;
+function getTransporteur(order) {
+  return order.transportOverride || autoTransport(order);
 }
 
+function badgeForCode(code) {
+  const cls = 'badge-' + code.toLowerCase().replace(' ','');
+  const knownCls = ['badge-trk','badge-coc','badge-reg','badge-rel','badge-so1','badge-dpr','badge-h2s','badge-hr3','badge-rco','badge-dpd','badge-col','badge-hex','badge-home'];
+  const finalCls = knownCls.find(c => c === cls) || 'badge-trk';
+  return `<span class="badge ${finalCls}">${code}</span>`;
+}
+
+// ── Render orders ──
 function renderOrders() {
   const list = document.getElementById('orders-list');
-  document.getElementById('orders-count-label').textContent = `${orderList.length} commandes`;
+  const count = orderList.filter(n => !allOrders[n].isSav).length;
+  const savCount = orderList.filter(n => allOrders[n].isSav).length;
+  document.getElementById('orders-count-label').textContent =
+    `${count} commande${count>1?'s':''}${savCount>0?' + '+savCount+' SAV':''}`;
   list.innerHTML = '';
-  orderList.forEach(n => {
-    const o = allOrders[n]; const isSelected = selected.has(n);
-    const transport = getTransporteur(o);
-    const total = parseFloat(o.header['Total'] || o.header['Subtotal'] || 0);
-    const card = document.createElement('div');
-    card.className = `order-card${isSelected ? ' selected' : ''}`;
-    card.id = `card-${n.replace('#','')}`;
-    const itemsHTML = o.items.map(item => `<div class="item-row"><span class="item-sku">${item['Lineitem sku']||''}</span><span class="item-name">${cleanTitre(item['Lineitem name']||'')}</span><span class="item-qty">×${item['Lineitem quantity']||1}</span><span class="item-price">${parseFloat(item['Lineitem price']||0).toFixed(2)} €</span></div>`).join('');
-    card.innerHTML = `
-      <div class="order-card-header" onclick="toggleCard('${n}')">
-        <div class="order-check">✓</div>
-        <span class="order-num">${n}</span>
-        <span class="order-name">${o.header['Shipping Name']||''}</span>
-        <span class="order-meta">${formatDate(o.header['Created at'])}</span>
-        ${badgeForTransporteur(transport)}
-        <span class="order-total">${total.toFixed(2)} €</span>
-        <span style="color:var(--text3);font-size:16px;" id="arrow-${n.replace('#','')}">›</span>
-      </div>
-      <div class="order-items" id="items-${n.replace('#','')}">
-        ${itemsHTML}
-        <div class="extra-lines" id="extra-${n.replace('#','')}"></div>
-        <button class="add-line-btn" onclick="addExtraLine('${n}');event.stopPropagation();">+ Ajouter un article (cadeau, Sai Sin…)</button>
-      </div>`;
-    list.appendChild(card);
-    o.extraLines.forEach((_, i) => renderExtraLine(n, i));
-  });
+  orderList.forEach(n => renderOrderCard(n, list));
   updateStats();
 }
 
+function renderOrderCard(n, container) {
+  const o = allOrders[n];
+  const isSelected = selected.has(n);
+  const transport = getTransporteur(o);
+  const total = o.isSav ? null : parseFloat(o.header['Total']||o.header['Subtotal']||0);
+  const date = o.isSav ? formatDateISO(o.header['Created at']) : formatDate(o.header['Created at']);
+  const shippingName = o.isSav
+    ? `${o.header['Prenom livraison']||''} ${o.header['Nom livraison']||''}`.trim()
+    : (o.header['Shipping Name']||'');
+
+  const card = document.createElement('div');
+  card.className = `order-card${isSelected?' selected':''}${o.isSav?' is-sav':''}`;
+  card.id = `card-${n.replace(/[^a-z0-9]/gi,'')}`;
+
+  // Transport select HTML
+  const selectOpts = TRANSPORT_OPTIONS.map(t =>
+    `<option value="${t.code}"${t.code===transport?' selected':''}>${t.code}</option>`
+  ).join('');
+
+  // Items HTML
+  let itemsHTML = '';
+  if (o.isSav) {
+    itemsHTML = (o.items||[]).map(item =>
+      `<div class="item-row"><span class="item-sku">${item.sku||''}</span><span class="item-name">${item.titre||''}</span><span class="item-qty">×${item.qty||1}</span></div>`
+    ).join('');
+  } else {
+    itemsHTML = o.items.map(item =>
+      `<div class="item-row"><span class="item-sku">${item['Lineitem sku']||''}</span><span class="item-name">${cleanTitre(item['Lineitem name']||'')}</span><span class="item-qty">×${item['Lineitem quantity']||1}</span><span class="item-price">${parseFloat(item['Lineitem price']||0).toFixed(2)} €</span></div>`
+    ).join('');
+  }
+
+  card.innerHTML = `
+    <div class="order-card-header" onclick="toggleCard('${n}')">
+      <div class="order-check">✓</div>
+      ${o.isSav ? '<span class="badge badge-sav" style="font-size:9px;">SAV</span>' : ''}
+      <span class="order-num">${n}</span>
+      <span class="order-name">${shippingName}</span>
+      <span class="order-meta">${date}</span>
+      <select class="transport-select" onclick="event.stopPropagation()" onchange="setTransportOverride('${n}',this.value)">${selectOpts}</select>
+      ${total !== null ? `<span class="order-total">${total.toFixed(2)} €</span>` : ''}
+      ${o.isSav ? `<button class="btn btn-danger btn-xs" onclick="deleteSavOrder('${n}');event.stopPropagation()">🗑</button>` : ''}
+      <span class="arrow">›</span>
+    </div>
+    <div class="order-items" id="items-${n.replace(/[^a-z0-9]/gi,'')}">
+      ${itemsHTML}
+      ${!o.isSav ? `
+      <div class="extra-lines" id="extra-${n.replace(/[^a-z0-9]/gi,'')}"></div>
+      <button class="add-line-btn" onclick="addExtraLine('${n}');event.stopPropagation();">+ Ajouter un article (cadeau, Sai Sin…)</button>
+      ` : ''}
+    </div>`;
+
+  container.appendChild(card);
+  if (!o.isSav) {
+    (o.extraLines||[]).forEach((_, i) => renderExtraLine(n, i));
+  }
+}
+
 function toggleCard(n) {
-  const card = document.getElementById(`card-${n.replace('#','')}`);
-  const arrow = document.getElementById(`arrow-${n.replace('#','')}`);
+  const id = n.replace(/[^a-z0-9]/gi,'');
+  const card = document.getElementById(`card-${id}`);
   const isExp = card.classList.contains('expanded');
-  if (!isExp) { card.classList.add('expanded'); arrow.style.transform = 'rotate(90deg)'; }
-  else {
-    card.classList.remove('expanded'); arrow.style.transform = '';
+  if (!isExp) {
+    card.classList.add('expanded');
+  } else {
+    card.classList.remove('expanded');
     if (selected.has(n)) { selected.delete(n); card.classList.remove('selected'); }
     else { selected.add(n); card.classList.add('selected'); }
     updateStats(); updateSummary();
   }
 }
 
+function setTransportOverride(n, val) {
+  allOrders[n].transportOverride = val;
+  updateSummary();
+}
+
+// ── Extra lines ──
 function addExtraLine(orderNum) {
-  allOrders[orderNum].extraLines.push({ sku: '', titre: '', qty: 1 });
+  if (!allOrders[orderNum].extraLines) allOrders[orderNum].extraLines = [];
+  allOrders[orderNum].extraLines.push({ sku:'', titre:'', qty:1 });
   renderExtraLine(orderNum, allOrders[orderNum].extraLines.length - 1);
   updateSummary();
 }
 
 function renderExtraLine(orderNum, idx) {
   const line = allOrders[orderNum].extraLines[idx];
-  const container = document.getElementById(`extra-${orderNum.replace('#','')}`);
+  const id = orderNum.replace(/[^a-z0-9]/gi,'');
+  const container = document.getElementById(`extra-${id}`);
   if (!container) return;
-  const existing = document.getElementById(`el-${orderNum.replace('#','')}-${idx}`);
+  const existing = document.getElementById(`el-${id}-${idx}`);
   if (existing) existing.remove();
   const div = document.createElement('div');
-  div.className = 'extra-line'; div.id = `el-${orderNum.replace('#','')}-${idx}`;
+  div.className = 'extra-line'; div.id = `el-${id}-${idx}`;
   div.innerHTML = `
     <input class="inp-sku" type="text" list="known-skus" placeholder="SKU" value="${line.sku}"
       onchange="updateExtraLine('${orderNum}',${idx},'sku',this.value)"
@@ -371,7 +607,8 @@ function autoFillTitre(orderNum, idx, sku) {
   if (titre) {
     allOrders[orderNum].extraLines[idx].sku = sku.trim();
     allOrders[orderNum].extraLines[idx].titre = titre;
-    const el = document.getElementById(`el-${orderNum.replace('#','')}-${idx}`);
+    const id = orderNum.replace(/[^a-z0-9]/gi,'');
+    const el = document.getElementById(`el-${id}-${idx}`);
     if (el) el.querySelector('.inp-titre').value = titre;
     updateSummary();
   }
@@ -381,24 +618,139 @@ function updateExtraLine(orderNum, idx, field, val) { allOrders[orderNum].extraL
 
 function removeExtraLine(orderNum, idx) {
   allOrders[orderNum].extraLines.splice(idx, 1);
-  const container = document.getElementById(`extra-${orderNum.replace('#','')}`);
+  const id = orderNum.replace(/[^a-z0-9]/gi,'');
+  const container = document.getElementById(`extra-${id}`);
   if (container) container.innerHTML = '';
   allOrders[orderNum].extraLines.forEach((_, i) => renderExtraLine(orderNum, i));
   updateSummary();
 }
 
-function selectAll() { orderList.forEach(n => { selected.add(n); document.getElementById(`card-${n.replace('#','')}`).classList.add('selected'); }); updateStats(); updateSummary(); }
-function selectNone() { orderList.forEach(n => { selected.delete(n); document.getElementById(`card-${n.replace('#','')}`).classList.remove('selected'); }); updateStats(); updateSummary(); }
+// ── SAV Modal ──
+function openSavModal() {
+  savItems = [{ sku:'', titre:'', qty:1 }];
+  renderSavItems();
+  // Set today's date
+  const today = new Date();
+  document.getElementById('sav-date').value = today.toISOString().slice(0,10);
+  // Clear fields
+  ['sav-ref','sav-prenom','sav-nom','sav-tel','sav-email','sav-societe','sav-addr1','sav-addr2','sav-zip','sav-city'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('sav-country').value = 'FR';
+  document.getElementById('sav-transport').value = 'TRK';
+  document.getElementById('sav-modal').classList.add('open');
+}
 
+function closeSavModal() { document.getElementById('sav-modal').classList.remove('open'); }
+
+function addSavItem() {
+  savItems.push({ sku:'', titre:'', qty:1 });
+  renderSavItems();
+}
+
+function renderSavItems() {
+  const container = document.getElementById('sav-items-list');
+  container.innerHTML = '';
+  savItems.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'sav-item-row';
+    row.innerHTML = `
+      <input class="sav-sku" type="text" list="known-skus" placeholder="SKU" value="${item.sku}"
+        onchange="savItems[${i}].sku=this.value"
+        oninput="autoFillSavTitre(${i},this.value)">
+      <input class="sav-titre" type="text" placeholder="Titre article" value="${item.titre}"
+        id="sav-titre-${i}" onchange="savItems[${i}].titre=this.value">
+      <input class="sav-qty" type="number" min="1" value="${item.qty}"
+        onchange="savItems[${i}].qty=parseInt(this.value)||1">
+      ${savItems.length > 1 ? `<button class="extra-btn-del" onclick="removeSavItem(${i})">×</button>` : ''}`;
+    container.appendChild(row);
+  });
+}
+
+function autoFillSavTitre(idx, sku) {
+  const titre = skuTitles[sku.trim()];
+  if (titre) {
+    savItems[idx].sku = sku.trim(); savItems[idx].titre = titre;
+    const el = document.getElementById(`sav-titre-${idx}`);
+    if (el) el.value = titre;
+  }
+}
+
+function removeSavItem(idx) { savItems.splice(idx, 1); renderSavItems(); }
+
+function saveSavOrder() {
+  const ref = document.getElementById('sav-ref').value.trim();
+  if (!ref) { alert('Le numéro de commande est obligatoire'); return; }
+  if (allOrders[ref]) { alert('Ce numéro de commande existe déjà'); return; }
+  const prenom = document.getElementById('sav-prenom').value.trim();
+  const nom = document.getElementById('sav-nom').value.trim();
+  if (!prenom && !nom) { alert('Le nom du destinataire est obligatoire'); return; }
+
+  const validItems = savItems.filter(i => i.sku || i.titre);
+  if (!validItems.length) { alert('Ajoutez au moins un article'); return; }
+
+  const dateVal = document.getElementById('sav-date').value;
+  const transport = document.getElementById('sav-transport').value;
+
+  allOrders[ref] = {
+    isSav: true,
+    transportOverride: transport,
+    extraLines: [],
+    items: validItems,
+    header: {
+      'Created at': dateVal,
+      'Prenom livraison': prenom,
+      'Nom livraison': nom,
+      'Telephone portable client': document.getElementById('sav-tel').value.trim(),
+      'Email client': document.getElementById('sav-email').value.trim(),
+      'Societe livraison ou Chez': document.getElementById('sav-societe').value.trim(),
+      'Adresse de livraison (1)': document.getElementById('sav-addr1').value.trim(),
+      'Adresse de livraison (2)': document.getElementById('sav-addr2').value.trim(),
+      'Code postal de livraison': document.getElementById('sav-zip').value.trim(),
+      'Ville de livraison': document.getElementById('sav-city').value.trim(),
+      'Pays de livraison': document.getElementById('sav-country').value.trim() || 'FR',
+    }
+  };
+  orderList.unshift(ref);
+  selected.add(ref);
+  closeSavModal();
+  renderOrders();
+  updateSummary();
+  toast(`✅ Commande ${ref} ajoutée`);
+}
+
+function deleteSavOrder(n) {
+  if (!confirm(`Supprimer la commande ${n} ?`)) return;
+  orderList = orderList.filter(x => x !== n);
+  delete allOrders[n];
+  selected.delete(n);
+  renderOrders(); updateSummary();
+}
+
+// ── Select all/none ──
+function selectAll() {
+  orderList.forEach(n => { selected.add(n); const c=document.getElementById(`card-${n.replace(/[^a-z0-9]/gi,'')}`); if(c) c.classList.add('selected'); });
+  updateStats(); updateSummary();
+}
+function selectNone() {
+  orderList.forEach(n => { selected.delete(n); const c=document.getElementById(`card-${n.replace(/[^a-z0-9]/gi,'')}`); if(c) c.classList.remove('selected'); });
+  updateStats(); updateSummary();
+}
+
+// ── Stats ──
 function updateStats() {
-  let trk = 0, coc = 0;
-  selected.forEach(n => { const t = getTransporteur(allOrders[n]); if (t === 'TRK') trk++; else coc++; });
+  let trk=0, coc=0;
+  selected.forEach(n => {
+    const t = getTransporteur(allOrders[n]);
+    if (t==='COC'||t==='REG') coc++; else trk++;
+  });
   document.getElementById('stat-sel').textContent = selected.size;
   document.getElementById('stat-trk').textContent = trk;
   document.getElementById('stat-coc').textContent = coc;
   document.getElementById('btn-generate').disabled = selected.size === 0;
 }
 
+// ── Summary ──
 function updateSummary() {
   updateStats();
   const body = document.getElementById('summary-body');
@@ -406,70 +758,127 @@ function updateSummary() {
   let html = '';
   selected.forEach(n => {
     const o = allOrders[n]; const t = getTransporteur(o);
-    html += `<div class="summary-order"><div class="summary-order-head"><strong>${n}</strong><span>${o.header['Shipping Name']||''}</span>${badgeForTransporteur(t)}</div><div class="summary-items">`;
-    o.items.forEach(item => { html += `<div class="summary-item"><span class="sku">${item['Lineitem sku']||''}</span><span class="name">${cleanTitre(item['Lineitem name']||'')}</span><span class="qty">×${item['Lineitem quantity']||1}</span></div>`; });
-    o.extraLines.forEach(el => { if (el.sku||el.titre) html += `<div class="summary-item extra"><span class="sku">${el.sku}</span><span class="name">${el.titre} <em style="color:var(--accent);font-size:11px;">(ajout manuel)</em></span><span class="qty">×${el.qty}</span></div>`; });
+    const name = o.isSav
+      ? `${o.header['Prenom livraison']||''} ${o.header['Nom livraison']||''}`.trim()
+      : (o.header['Shipping Name']||'');
+    html += `<div class="summary-order${o.isSav?' is-sav':''}">
+      <div class="summary-order-head">
+        <strong>${n}</strong>
+        <span class="client">${name}</span>
+        ${badgeForCode(t)}
+      </div>
+      <div class="summary-items">`;
+    const items = o.isSav ? o.items : o.items;
+    items.forEach(item => {
+      const sku = o.isSav ? item.sku : (item['Lineitem sku']||'');
+      const titre = o.isSav ? item.titre : cleanTitre(item['Lineitem name']||'');
+      const qty = o.isSav ? item.qty : (item['Lineitem quantity']||1);
+      html += `<div class="summary-item"><span class="sku">${sku}</span><span class="name">${titre}</span><span class="qty">×${qty}</span></div>`;
+    });
+    if (!o.isSav) {
+      (o.extraLines||[]).forEach(el => {
+        if (el.sku||el.titre) html += `<div class="summary-item extra"><span class="sku">${el.sku}</span><span class="name">${el.titre} <em style="color:var(--accent);font-size:10px;">(+)</em></span><span class="qty">×${el.qty}</span></div>`;
+      });
+    }
     html += '</div></div>';
   });
   body.innerHTML = html;
 }
 
+// ── Generate ──
 function generateAndDownload() {
   const donneur = document.getElementById('cfg-donneur').value || '11ORS';
   const vendeur = document.getElementById('cfg-vendeur').value || '11ORS';
   const cols = ["Donneur d'ordre","Vendeur","Date de la vente","Reference vendeur de la commande","Reference ligne de la commande","Prenom livraison","Nom livraison","Telephone portable client","Email client","Societe livraison ou Chez","Adresse de livraison (1)","Adresse de livraison (2)","Code postal de livraison","Ville de livraison","Pays de livraison","Transporteur","ID Relais","Message transporteur","Port HT","Port TTC","Devis","Assurance","Ref article","Titre","Quantite","Prix de vente HT","Prix de vente TTC"];
   const lines = [cols.join('|')];
+
   selected.forEach(n => {
     const o = allOrders[n]; const transport = getTransporteur(o);
-    const date = formatDate(o.header['Created at']);
-    const [prenom, nom] = splitName(o.header['Shipping Name']||'');
-    const addr2 = (o.header['Shipping Address2']||'') === 'NaN' ? '' : (o.header['Shipping Address2']||'');
-    const base = { "Donneur d'ordre": donneur, Vendeur: vendeur, "Date de la vente": date, "Reference vendeur de la commande": n };
-    const hrow = { ...base, "Reference ligne de la commande": 0, "Prenom livraison": prenom, "Nom livraison": nom, "Telephone portable client": formatPhone(o.header['Shipping Phone']), "Email client": o.header['Email']||'', "Societe livraison ou Chez": '', "Adresse de livraison (1)": o.header['Shipping Address1']||'', "Adresse de livraison (2)": addr2, "Code postal de livraison": cleanZip(o.header['Shipping Zip']||''), "Ville de livraison": o.header['Shipping City']||'', "Pays de livraison": o.header['Shipping Country']||'', Transporteur: transport, "ID Relais": '', "Message transporteur": '', "Port HT": '', "Port TTC": '', Devis: 'EUR', Assurance: '', "Ref article": '', Titre: '', Quantite: '', "Prix de vente HT": '', "Prix de vente TTC": '' };
+    let date, prenom, nom, phone, email, societe, addr1, addr2, zip, city, country;
+
+    if (o.isSav) {
+      date = formatDateISO(o.header['Created at']);
+      prenom = o.header['Prenom livraison']||'';
+      nom = o.header['Nom livraison']||'';
+      phone = o.header['Telephone portable client']||'';
+      email = o.header['Email client']||'';
+      societe = o.header['Societe livraison ou Chez']||'';
+      addr1 = o.header['Adresse de livraison (1)']||'';
+      addr2 = o.header['Adresse de livraison (2)']||'';
+      zip = o.header['Code postal de livraison']||'';
+      city = o.header['Ville de livraison']||'';
+      country = o.header['Pays de livraison']||'FR';
+    } else {
+      date = formatDate(o.header['Created at']);
+      [prenom, nom] = splitName(o.header['Shipping Name']||'');
+      phone = formatPhone(o.header['Shipping Phone']);
+      email = o.header['Email']||'';
+      societe = '';
+      addr1 = o.header['Shipping Address1']||'';
+      addr2 = (o.header['Shipping Address2']||'')==='NaN'?'':(o.header['Shipping Address2']||'');
+      zip = cleanZip(o.header['Shipping Zip']||'');
+      city = o.header['Shipping City']||'';
+      country = o.header['Shipping Country']||'';
+    }
+
+    const base = { "Donneur d'ordre":donneur, Vendeur:vendeur, "Date de la vente":date, "Reference vendeur de la commande":n };
+    const hrow = { ...base, "Reference ligne de la commande":0, "Prenom livraison":prenom, "Nom livraison":nom, "Telephone portable client":phone, "Email client":email, "Societe livraison ou Chez":societe, "Adresse de livraison (1)":addr1, "Adresse de livraison (2)":addr2, "Code postal de livraison":zip, "Ville de livraison":city, "Pays de livraison":country, Transporteur:transport, "ID Relais":'', "Message transporteur":'', "Port HT":'', "Port TTC":'', Devis:'EUR', Assurance:'', "Ref article":'', Titre:'', Quantite:'', "Prix de vente HT":'', "Prix de vente TTC":'' };
     lines.push(cols.map(c => hrow[c]===undefined?'':hrow[c]).join('|'));
+
     let lineNum = 1;
-    o.items.forEach(item => {
-      const r = { ...base, "Reference ligne de la commande": lineNum++, "Prenom livraison": '', "Nom livraison": '', "Telephone portable client": '', "Email client": '', "Societe livraison ou Chez": '', "Adresse de livraison (1)": '', "Adresse de livraison (2)": '', "Code postal de livraison": '', "Ville de livraison": '', "Pays de livraison": '', Transporteur: '', "ID Relais": '', "Message transporteur": '', "Port HT": '', "Port TTC": '', Devis: '', Assurance: '', "Ref article": cleanSku(item['Lineitem sku']), Titre: cleanTitre(item['Lineitem name']), Quantite: item['Lineitem quantity']||1, "Prix de vente HT": '', "Prix de vente TTC": '' };
+    const items = o.isSav ? o.items : o.items;
+    items.forEach(item => {
+      const sku = o.isSav ? item.sku : cleanSku(item['Lineitem sku']);
+      const titre = o.isSav ? item.titre : cleanTitre(item['Lineitem name']);
+      const qty = o.isSav ? (item.qty||1) : (item['Lineitem quantity']||1);
+      const r = { ...base, "Reference ligne de la commande":lineNum++, "Prenom livraison":'', "Nom livraison":'', "Telephone portable client":'', "Email client":'', "Societe livraison ou Chez":'', "Adresse de livraison (1)":'', "Adresse de livraison (2)":'', "Code postal de livraison":'', "Ville de livraison":'', "Pays de livraison":'', Transporteur:'', "ID Relais":'', "Message transporteur":'', "Port HT":'', "Port TTC":'', Devis:'', Assurance:'', "Ref article":sku, Titre:titre, Quantite:qty, "Prix de vente HT":'', "Prix de vente TTC":'' };
       lines.push(cols.map(c => r[c]===undefined?'':r[c]).join('|'));
     });
-    o.extraLines.forEach(el => {
-      if (!el.sku && !el.titre) return;
-      const r = { ...base, "Reference ligne de la commande": lineNum++, "Prenom livraison": '', "Nom livraison": '', "Telephone portable client": '', "Email client": '', "Societe livraison ou Chez": '', "Adresse de livraison (1)": '', "Adresse de livraison (2)": '', "Code postal de livraison": '', "Ville de livraison": '', "Pays de livraison": '', Transporteur: '', "ID Relais": '', "Message transporteur": '', "Port HT": '', "Port TTC": '', Devis: '', Assurance: '', "Ref article": el.sku, Titre: el.titre, Quantite: el.qty||1, "Prix de vente HT": '', "Prix de vente TTC": '' };
-      lines.push(cols.map(c => r[c]===undefined?'':r[c]).join('|'));
-    });
+
+    if (!o.isSav) {
+      (o.extraLines||[]).forEach(el => {
+        if (!el.sku && !el.titre) return;
+        const r = { ...base, "Reference ligne de la commande":lineNum++, "Prenom livraison":'', "Nom livraison":'', "Telephone portable client":'', "Email client":'', "Societe livraison ou Chez":'', "Adresse de livraison (1)":'', "Adresse de livraison (2)":'', "Code postal de livraison":'', "Ville de livraison":'', "Pays de livraison":'', Transporteur:'', "ID Relais":'', "Message transporteur":'', "Port HT":'', "Port TTC":'', Devis:'', Assurance:'', "Ref article":el.sku, Titre:el.titre, Quantite:el.qty||1, "Prix de vente HT":'', "Prix de vente TTC":'' };
+        lines.push(cols.map(c => r[c]===undefined?'':r[c]).join('|'));
+      });
+    }
   });
+
   const today = new Date();
   const fname = `${String(today.getDate()).padStart(2,'0')}${String(today.getMonth()+1).padStart(2,'0')}${today.getFullYear()}.csv`;
-  const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['\uFEFF'+lines.join('\n')], { type:'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = fname; a.click();
+  const a = document.createElement('a'); a.href=url; a.download=fname; a.click();
   URL.revokeObjectURL(url);
   toast(`✅ ${fname} téléchargé — ${selected.size} commandes`);
 }
 
-function formatDate(s) { if (!s) return ''; const d = new Date(s); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
-function splitName(full) { const parts = full.trim().split(/\s+/); if (!parts.length) return ['','']; return [parts[0].charAt(0).toUpperCase()+parts[0].slice(1).toLowerCase(), parts.slice(1).map(x=>x.charAt(0).toUpperCase()+x.slice(1).toLowerCase()).join(' ')]; }
-function formatPhone(phone) { if (!phone||phone==='NaN') return ''; let s=String(phone); if(s.includes('.'))s=s.split('.')[0]; const d=s.replace(/\D/g,''); if(d.startsWith('33')&&d.length===11){const x=d.slice(2);return `+33 ${x[0]} ${x.slice(1,3)} ${x.slice(3,5)} ${x.slice(5,7)} ${x.slice(7,9)}`;} if(d.startsWith('0')&&d.length===10){const x=d.slice(1);return `+33 ${x[0]} ${x.slice(1,3)} ${x.slice(3,5)} ${x.slice(5,7)} ${x.slice(7,9)}`;} return phone; }
+// ── Helpers ──
+function formatDate(s) { if(!s)return''; const d=new Date(s); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+function formatDateISO(s) { if(!s)return''; const d=new Date(s); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+function splitName(full) { const p=full.trim().split(/\s+/); if(!p.length)return['','']; return [p[0].charAt(0).toUpperCase()+p[0].slice(1).toLowerCase(), p.slice(1).map(x=>x.charAt(0).toUpperCase()+x.slice(1).toLowerCase()).join(' ')]; }
+function formatPhone(phone) { if(!phone||phone==='NaN')return''; let s=String(phone); if(s.includes('.'))s=s.split('.')[0]; const d=s.replace(/\D/g,''); if(d.startsWith('33')&&d.length===11){const x=d.slice(2);return `+33 ${x[0]} ${x.slice(1,3)} ${x.slice(3,5)} ${x.slice(5,7)} ${x.slice(7,9)}`;} if(d.startsWith('0')&&d.length===10){const x=d.slice(1);return `+33 ${x[0]} ${x.slice(1,3)} ${x.slice(3,5)} ${x.slice(5,7)} ${x.slice(7,9)}`;} return phone; }
 function cleanZip(z) { let s=String(z).trim(); if(s.startsWith("'"))s=s.slice(1); if(s.includes('.'))s=s.split('.')[0]; return s; }
-function cleanTitre(name) { return name.trim().replace(/\s*-\s*[A-Z]{1,2}(\s*\(.*?\))?$/,''); }
+function cleanTitre(name) { return (name||'').trim().replace(/\s*-\s*[A-Z]{1,2}(\s*\(.*?\))?$/,''); }
 function cleanSku(sku) { return (sku||'').trim(); }
 function toast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 
+// ── Password ──
 function checkPwd() {
   const val = document.getElementById('pwd-input').value;
-  if (localStorage.getItem('bkc_pwd_ok') === 'bkc2024' || val === 'bkc2024') {
+  if (localStorage.getItem('bkc_pwd_ok')==='bkc2024' || val==='bkc2024') {
     localStorage.setItem('bkc_pwd_ok','bkc2024');
-    document.getElementById('lock-screen').style.display = 'none';
-    document.getElementById('app-wrap').style.display = 'block';
+    document.getElementById('lock-screen').style.display='none';
+    document.getElementById('app-wrap').style.display='block';
   } else {
-    const err = document.getElementById('lock-error');
-    err.style.display = 'block'; document.getElementById('pwd-input').value = '';
-    setTimeout(() => err.style.display = 'none', 3000);
+    const err=document.getElementById('lock-error'); err.style.display='block';
+    document.getElementById('pwd-input').value='';
+    setTimeout(()=>err.style.display='none',3000);
   }
 }
-if (localStorage.getItem('bkc_pwd_ok') === 'bkc2024') {
-  document.getElementById('lock-screen').style.display = 'none';
-  document.getElementById('app-wrap').style.display = 'block';
+if (localStorage.getItem('bkc_pwd_ok')==='bkc2024') {
+  document.getElementById('lock-screen').style.display='none';
+  document.getElementById('app-wrap').style.display='block';
 }
 </script>
 </div>
