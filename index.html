@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bâan Kumlai — Export Entrepôt</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+#lock-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #F7F6F3;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+}
+.lock-card {
+  background: #fff; border: 1px solid #E5E2DA; border-radius: 16px;
+  padding: 40px 36px; width: 340px; text-align: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.lock-logo { font-size: 28px; margin-bottom: 6px; }
+.lock-title { font-size: 17px; font-weight: 600; color: #2D5016; margin-bottom: 4px; letter-spacing: -0.02em; }
+.lock-sub { font-size: 13px; color: #9E9A93; margin-bottom: 24px; }
+.lock-card input[type=password] {
+  width: 100%; font-family: 'DM Sans', sans-serif; font-size: 15px;
+  border: 1.5px solid #D4D0C8; border-radius: 8px; padding: 10px 14px;
+  margin-bottom: 12px; outline: none; text-align: center; letter-spacing: 0.1em;
+  background: #F7F6F3; color: #1A1816; transition: border-color 0.15s;
+}
+.lock-card input[type=password]:focus { border-color: #4A7C22; background: #fff; }
+.lock-card button {
+  width: 100%; background: #2D5016; color: white; border: none; border-radius: 8px;
+  padding: 11px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+.lock-card button:hover { background: #234010; }
+.lock-error { font-size: 12px; color: #C0392B; margin-top: 10px; display: none; }
+#app-wrap { display: none; }
+:root {
+  --bg: #F7F6F3; --surface: #FFFFFF; --surface2: #F2F0EC;
+  --border: #E5E2DA; --border2: #D4D0C8;
+  --text: #1A1816; --text2: #6B6760; --text3: #9E9A93;
+  --accent: #2D5016; --accent-light: #EBF2E3; --accent-mid: #4A7C22;
+  --gold: #B8860B; --gold-light: #FDF8E7;
+  --red: #C0392B; --red-light: #FDECEA;
+  --blue: #1A5276; --blue-light: #EAF2F8;
+  --radius: 8px; --radius-lg: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+.app-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.app-logo { font-size: 15px; font-weight: 600; color: var(--accent); letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+.app-logo span { color: var(--text3); font-weight: 400; font-size: 13px; }
+.layout { display: grid; grid-template-columns: 1fr 380px; gap: 0; height: calc(100vh - 56px); }
+.panel-left { overflow-y: auto; padding: 20px 20px 20px 24px; border-right: 1px solid var(--border); }
+.panel-right { overflow-y: auto; background: var(--surface); display: flex; flex-direction: column; }
+.panel-right-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 10; }
+.panel-right-body { flex: 1; overflow-y: auto; padding: 12px 20px; }
+.panel-right-footer { padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface); position: sticky; bottom: 0; }
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); }
+.upload-wrap { background: var(--surface); border: 1.5px dashed var(--border2); border-radius: var(--radius-lg); padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.15s; margin-bottom: 20px; }
+.upload-wrap:hover, .upload-wrap.drag { border-color: var(--accent-mid); background: var(--accent-light); }
+.upload-icon { font-size: 32px; margin-bottom: 8px; }
+.upload-wrap p { font-size: 13px; color: var(--text2); }
+.upload-wrap strong { color: var(--text); }
+.order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 8px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
+.order-card.selected { border-color: var(--accent-mid); box-shadow: 0 0 0 2px var(--accent-light); }
+.order-card-header { display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; user-select: none; }
+.order-card-header:hover { background: var(--surface2); }
+.order-check { width: 18px; height: 18px; border: 1.5px solid var(--border2); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; font-size: 11px; color: transparent; }
+.order-card.selected .order-check { background: var(--accent); border-color: var(--accent); color: white; }
+.order-num { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
+.order-name { font-size: 13px; color: var(--text); flex: 1; }
+.order-meta { font-size: 11px; color: var(--text3); }
+.order-total { font-size: 13px; font-weight: 600; color: var(--text); }
+.badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; }
+.badge-trk { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
+.badge-coc { background: var(--blue-light); color: var(--blue); border: 1px solid #BDD6F0; }
+.badge-rel { background: var(--gold-light); color: var(--gold); border: 1px solid #EDD97A; }
+.order-items { border-top: 1px solid var(--border); padding: 8px 14px 10px 44px; display: none; }
+.order-card.expanded .order-items { display: block; }
+.item-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.item-row:last-child { border-bottom: none; }
+.item-sku { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); min-width: 120px; }
+.item-name { flex: 1; color: var(--text); }
+.item-qty { font-weight: 600; color: var(--text2); min-width: 30px; text-align: right; }
+.item-price { color: var(--text3); min-width: 50px; text-align: right; font-size: 12px; }
+.extra-lines { padding: 6px 0 2px; }
+.extra-line { display: flex; align-items: center; gap: 6px; padding: 4px 0; animation: fadeIn 0.15s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.extra-line input { font-family: 'DM Sans', sans-serif; font-size: 12px; border: 1px solid var(--border2); border-radius: var(--radius); padding: 5px 8px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
+.extra-line input:focus { border-color: var(--accent-mid); }
+.extra-line .inp-sku { width: 130px; font-family: 'DM Mono', monospace; font-size: 11px; }
+.extra-line .inp-titre { flex: 1; }
+.extra-line .inp-qty { width: 52px; text-align: center; }
+.extra-btn-del { width: 22px; height: 22px; border: none; background: none; color: var(--text3); cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; transition: color 0.1s, background 0.1s; }
+.extra-btn-del:hover { color: var(--red); background: var(--red-light); }
+.add-line-btn { font-size: 12px; color: var(--accent-mid); background: none; border: 1px dashed var(--accent-mid); border-radius: var(--radius); padding: 4px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; transition: background 0.15s; }
+.add-line-btn:hover { background: var(--accent-light); }
+button, .btn { font-family: 'DM Sans', sans-serif; cursor: pointer; border-radius: var(--radius); font-size: 13px; font-weight: 500; border: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s; padding: 7px 14px; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #234010; }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border2); }
+.btn-outline:hover { background: var(--surface2); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-all { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+.btn-all:hover { background: var(--border); }
+.summary-empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; }
+.summary-order { border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden; }
+.summary-order-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 12px; }
+.summary-order-head strong { font-family: 'DM Mono', monospace; font-size: 12px; }
+.summary-items { padding: 6px 12px; }
+.summary-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--border); }
+.summary-item:last-child { border-bottom: none; }
+.summary-item .sku { font-family: 'DM Mono', monospace; color: var(--text3); font-size: 11px; width: 110px; flex-shrink: 0; }
+.summary-item .name { flex: 1; color: var(--text); }
+.summary-item .qty { font-weight: 600; color: var(--text2); }
+.summary-item.extra { background: var(--accent-light); margin: 0 -12px; padding: 4px 12px; }
+.summary-item.extra .sku { color: var(--accent); }
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.stat-box { background: var(--surface2); border-radius: var(--radius); padding: 10px 12px; text-align: center; }
+.stat-box .val { font-size: 22px; font-weight: 600; color: var(--text); line-height: 1.2; }
+.stat-box .lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg); z-index: 999; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.config-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+.config-field { display: flex; flex-direction: column; gap: 3px; }
+.config-field label { font-size: 11px; color: var(--text3); }
+.config-field input { font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border2); border-radius: var(--radius); padding: 6px 10px; background: var(--bg); color: var(--text); outline: none; width: 80px; }
+.config-field input:focus { border-color: var(--accent-mid); }
+.config-field input.wide { width: 120px; }
+</style>
+</head>
+<body>
+
+<div id="lock-screen">
+  <div class="lock-card">
+    <div class="lock-logo">🌿</div>
+    <div class="lock-title">Bâan Kumlai</div>
+    <div class="lock-sub">Export Entrepôt — accès restreint</div>
+    <input type="password" id="pwd-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkPwd()">
+    <button onclick="checkPwd()">Accéder →</button>
+    <div class="lock-error" id="lock-error">Mot de passe incorrect</div>
+  </div>
+</div>
+
+<div id="app-wrap">
+
+<datalist id="known-skus">
+  <option value="SAISINR">Fil Rouge Sacré Bouddhiste</option>
+  <option value="JONCOR_S">Jonc Bouddhiste Or S</option>
+  <option value="JONCOR_M">Jonc Bouddhiste Or M</option>
+  <option value="JONCOR_L">Jonc Bouddhiste Or L</option>
+  <option value="JONCARGENT_S">Jonc Bouddhiste Argent S</option>
+  <option value="JONCARGENT_M">Jonc Bouddhiste Argent M</option>
+  <option value="JONC_ROSEPOUDRE_M">Jonc Bouddhiste Rose Poudré M</option>
+  <option value="JONC_VERTANTIQUE_M">Jonc Bouddhiste Vert Antique M</option>
+  <option value="JONCTORSADOR_M">Jonc Bouddhiste Torsadé Or M</option>
+  <option value="BAGUEOR_M">Bague Bouddhiste Or M</option>
+  <option value="PACKSPIRITJ">Ensemble Spirituel Bouddhiste</option>
+</datalist>
+
+<div id="sku-titles" style="display:none">
+  <span data-sku="SAISINR" data-titre="Fil Rouge Sacré Bouddhiste"></span>
+  <span data-sku="JONCOR_S" data-titre="Jonc Bouddhiste Or"></span>
+  <span data-sku="JONCOR_M" data-titre="Jonc Bouddhiste Or"></span>
+  <span data-sku="JONCOR_L" data-titre="Jonc Bouddhiste Or"></span>
+  <span data-sku="JONCARGENT_S" data-titre="Jonc Bouddhiste Argent"></span>
+  <span data-sku="JONCARGENT_M" data-titre="Jonc Bouddhiste Argent"></span>
+  <span data-sku="JONC_ROSEPOUDRE_M" data-titre="Jonc Bouddhiste Rose Poudré"></span>
+  <span data-sku="JONC_VERTANTIQUE_M" data-titre="Jonc Bouddhiste Vert Antique"></span>
+  <span data-sku="JONCTORSADOR_M" data-titre="Jonc Bouddhiste Torsadé Or"></span>
+  <span data-sku="BAGUEOR_M" data-titre="Bague Bouddhiste Or"></span>
+  <span data-sku="PACKSPIRITJ" data-titre="Ensemble Spirituel Bouddhiste – Yantra + Bracelet Rouge Sai Sin + Prière"></span>
+</div>
+
+<header class="app-header">
+  <div class="app-logo">🌿 Bâan Kumlai <span>/ Export Entrepôt</span></div>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <div class="config-row" style="margin:0;">
+      <div class="config-field"><label>Donneur d'ordre</label><input type="text" id="cfg-donneur" value="11ORS" class="wide"></div>
+      <div class="config-field"><label>Vendeur</label><input type="text" id="cfg-vendeur" value="11ORS"></div>
+      <div class="config-field"><label>Seuil COC (€)</label><input type="number" id="cfg-seuil" value="75" min="0"></div>
+    </div>
+    <label class="btn btn-outline btn-sm" style="cursor:pointer;">
+      📂 Importer CSV
+      <input type="file" id="file-input" accept=".csv" style="display:none">
+    </label>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="panel-left">
+    <div id="upload-zone" class="upload-wrap" onclick="document.getElementById('file-input').click()">
+      <div class="upload-icon">📦</div>
+      <p><strong>Déposez votre export Shopify ici</strong></p>
+      <p>ou cliquez pour choisir le fichier CSV</p>
+    </div>
+    <div id="orders-area" style="display:none">
+      <div class="section-head">
+        <span class="section-title" id="orders-count-label">Commandes</span>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-all btn-sm" onclick="selectAll()">Tout sélectionner</button>
+          <button class="btn btn-outline btn-sm" onclick="selectNone()">Tout désélectionner</button>
+        </div>
+      </div>
+      <div id="orders-list"></div>
+    </div>
+  </div>
+
+  <div class="panel-right">
+    <div class="panel-right-header">
+      <div class="section-title" style="margin-bottom:10px;">Récapitulatif export</div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="val" id="stat-sel">0</div><div class="lbl">sélectionnées</div></div>
+        <div class="stat-box"><div class="val" id="stat-trk">0</div><div class="lbl">via TRK</div></div>
+        <div class="stat-box"><div class="val" id="stat-coc">0</div><div class="lbl">via COC</div></div>
+      </div>
+    </div>
+    <div class="panel-right-body" id="summary-body">
+      <div class="summary-empty">Sélectionnez des commandes pour les inclure dans l'export</div>
+    </div>
+    <div class="panel-right-footer">
+      <button class="btn btn-primary" id="btn-generate" onclick="generateAndDownload()" disabled style="width:100%;justify-content:center;padding:11px;">
+        ⬇️ Générer et télécharger le fichier
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+let allOrders = {}, orderList = [], selected = new Set();
+const skuTitles = {};
+document.querySelectorAll('#sku-titles span').forEach(el => { skuTitles[el.dataset.sku] = el.dataset.titre; });
+
+const fileInput = document.getElementById('file-input');
+const uploadZone = document.getElementById('upload-zone');
+fileInput.addEventListener('change', e => { if (e.target.files[0]) parseCSV(e.target.files[0]); });
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag'); if (e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]); });
+
+function parseCSV(file) {
+  Papa.parse(file, { header: true, skipEmptyLines: true,
+    complete(res) {
+      if (!res.data.length || !res.data[0]['Name']) { toast('❌ Fichier invalide'); return; }
+      buildOrders(res.data);
+    },
+    error() { toast('❌ Erreur de lecture'); }
+  });
+}
+
+function buildOrders(rows) {
+  allOrders = {}; orderList = []; selected = new Set();
+  rows.forEach(r => {
+    const n = r['Name'];
+    if (!allOrders[n]) { allOrders[n] = { header: r, items: [], extraLines: [] }; orderList.push(n); }
+    allOrders[n].items.push(r);
+  });
+  orderList.forEach(n => { if ((allOrders[n].header['Fulfillment Status']||'').toLowerCase() !== 'fulfilled') selected.add(n); });
+  renderOrders(); updateSummary();
+  document.getElementById('upload-zone').style.display = 'none';
+  document.getElementById('orders-area').style.display = 'block';
+  toast(`✅ ${orderList.length} commandes importées`);
+}
+
+function getTransporteur(order) {
+  const seuil = parseFloat(document.getElementById('cfg-seuil').value) || 75;
+  const total = parseFloat(order.header['Total'] || order.header['Subtotal'] || 0);
+  if (total >= seuil) return 'COC';
+  const m = (order.header['Shipping Method'] || '').toLowerCase();
+  if (m.includes('mondial') || (m.includes('relais') && !m.includes('colis'))) return 'REL';
+  if (m.includes('relais colis')) return 'RCO';
+  if (m.includes('colissimo') && (m.includes('signature') || m.includes('contre'))) return 'COC';
+  if (m.includes('colissimo') && m.includes('retrait')) return 'SO1';
+  if (m.includes('colissimo')) return 'COL';
+  if (m.includes('dpd') && m.includes('retrait')) return 'DPR';
+  if (m.includes('dpd')) return 'DPD';
+  if (m.includes('chrono') && m.includes('13')) return 'HR3';
+  if (m.includes('chrono') && m.includes('2shop')) return 'H2S';
+  if (m.includes('chrono')) return 'HEX';
+  return 'TRK';
+}
+
+function badgeForTransporteur(code) {
+  if (code === 'COC') return `<span class="badge badge-coc">${code}</span>`;
+  if (['REL','RCO','SO1','DPR','H2S','HR3'].includes(code)) return `<span class="badge badge-rel">${code}</span>`;
+  return `<span class="badge badge-trk">${code}</span>`;
+}
+
+function renderOrders() {
+  const list = document.getElementById('orders-list');
+  document.getElementById('orders-count-label').textContent = `${orderList.length} commandes`;
+  list.innerHTML = '';
+  orderList.forEach(n => {
+    const o = allOrders[n]; const isSelected = selected.has(n);
+    const transport = getTransporteur(o);
+    const total = parseFloat(o.header['Total'] || o.header['Subtotal'] || 0);
+    const card = document.createElement('div');
+    card.className = `order-card${isSelected ? ' selected' : ''}`;
+    card.id = `card-${n.replace('#','')}`;
+    const itemsHTML = o.items.map(item => `<div class="item-row"><span class="item-sku">${item['Lineitem sku']||''}</span><span class="item-name">${cleanTitre(item['Lineitem name']||'')}</span><span class="item-qty">×${item['Lineitem quantity']||1}</span><span class="item-price">${parseFloat(item['Lineitem price']||0).toFixed(2)} €</span></div>`).join('');
+    card.innerHTML = `
+      <div class="order-card-header" onclick="toggleCard('${n}')">
+        <div class="order-check">✓</div>
+        <span class="order-num">${n}</span>
+        <span class="order-name">${o.header['Shipping Name']||''}</span>
+        <span class="order-meta">${formatDate(o.header['Created at'])}</span>
+        ${badgeForTransporteur(transport)}
+        <span class="order-total">${total.toFixed(2)} €</span>
+        <span style="color:var(--text3);font-size:16px;" id="arrow-${n.replace('#','')}">›</span>
+      </div>
+      <div class="order-items" id="items-${n.replace('#','')}">
+        ${itemsHTML}
+        <div class="extra-lines" id="extra-${n.replace('#','')}"></div>
+        <button class="add-line-btn" onclick="addExtraLine('${n}');event.stopPropagation();">+ Ajouter un article (cadeau, Sai Sin…)</button>
+      </div>`;
+    list.appendChild(card);
+    o.extraLines.forEach((_, i) => renderExtraLine(n, i));
+  });
+  updateStats();
+}
+
+function toggleCard(n) {
+  const card = document.getElementById(`card-${n.replace('#','')}`);
+  const arrow = document.getElementById(`arrow-${n.replace('#','')}`);
+  const isExp = card.classList.contains('expanded');
+  if (!isExp) { card.classList.add('expanded'); arrow.style.transform = 'rotate(90deg)'; }
+  else {
+    card.classList.remove('expanded'); arrow.style.transform = '';
+    if (selected.has(n)) { selected.delete(n); card.classList.remove('selected'); }
+    else { selected.add(n); card.classList.add('selected'); }
+    updateStats(); updateSummary();
+  }
+}
+
+function addExtraLine(orderNum) {
+  allOrders[orderNum].extraLines.push({ sku: '', titre: '', qty: 1 });
+  renderExtraLine(orderNum, allOrders[orderNum].extraLines.length - 1);
+  updateSummary();
+}
+
+function renderExtraLine(orderNum, idx) {
+  const line = allOrders[orderNum].extraLines[idx];
+  const container = document.getElementById(`extra-${orderNum.replace('#','')}`);
+  if (!container) return;
+  const existing = document.getElementById(`el-${orderNum.replace('#','')}-${idx}`);
+  if (existing) existing.remove();
+  const div = document.createElement('div');
+  div.className = 'extra-line'; div.id = `el-${orderNum.replace('#','')}-${idx}`;
+  div.innerHTML = `
+    <input class="inp-sku" type="text" list="known-skus" placeholder="SKU" value="${line.sku}"
+      onchange="updateExtraLine('${orderNum}',${idx},'sku',this.value)"
+      oninput="autoFillTitre('${orderNum}',${idx},this.value)">
+    <input class="inp-titre" type="text" placeholder="Titre article" value="${line.titre}"
+      onchange="updateExtraLine('${orderNum}',${idx},'titre',this.value)">
+    <input class="inp-qty" type="number" min="1" value="${line.qty}"
+      onchange="updateExtraLine('${orderNum}',${idx},'qty',parseInt(this.value)||1)">
+    <button class="extra-btn-del" onclick="removeExtraLine('${orderNum}',${idx})">×</button>`;
+  container.appendChild(div);
+}
+
+function autoFillTitre(orderNum, idx, sku) {
+  const titre = skuTitles[sku.trim()];
+  if (titre) {
+    allOrders[orderNum].extraLines[idx].sku = sku.trim();
+    allOrders[orderNum].extraLines[idx].titre = titre;
+    const el = document.getElementById(`el-${orderNum.replace('#','')}-${idx}`);
+    if (el) el.querySelector('.inp-titre').value = titre;
+    updateSummary();
+  }
+}
+
+function updateExtraLine(orderNum, idx, field, val) { allOrders[orderNum].extraLines[idx][field] = val; updateSummary(); }
+
+function removeExtraLine(orderNum, idx) {
+  allOrders[orderNum].extraLines.splice(idx, 1);
+  const container = document.getElementById(`extra-${orderNum.replace('#','')}`);
+  if (container) container.innerHTML = '';
+  allOrders[orderNum].extraLines.forEach((_, i) => renderExtraLine(orderNum, i));
+  updateSummary();
+}
+
+function selectAll() { orderList.forEach(n => { selected.add(n); document.getElementById(`card-${n.replace('#','')}`).classList.add('selected'); }); updateStats(); updateSummary(); }
+function selectNone() { orderList.forEach(n => { selected.delete(n); document.getElementById(`card-${n.replace('#','')}`).classList.remove('selected'); }); updateStats(); updateSummary(); }
+
+function updateStats() {
+  let trk = 0, coc = 0;
+  selected.forEach(n => { const t = getTransporteur(allOrders[n]); if (t === 'TRK') trk++; else coc++; });
+  document.getElementById('stat-sel').textContent = selected.size;
+  document.getElementById('stat-trk').textContent = trk;
+  document.getElementById('stat-coc').textContent = coc;
+  document.getElementById('btn-generate').disabled = selected.size === 0;
+}
+
+function updateSummary() {
+  updateStats();
+  const body = document.getElementById('summary-body');
+  if (selected.size === 0) { body.innerHTML = '<div class="summary-empty">Sélectionnez des commandes pour les inclure dans l\'export</div>'; return; }
+  let html = '';
+  selected.forEach(n => {
+    const o = allOrders[n]; const t = getTransporteur(o);
+    html += `<div class="summary-order"><div class="summary-order-head"><strong>${n}</strong><span>${o.header['Shipping Name']||''}</span>${badgeForTransporteur(t)}</div><div class="summary-items">`;
+    o.items.forEach(item => { html += `<div class="summary-item"><span class="sku">${item['Lineitem sku']||''}</span><span class="name">${cleanTitre(item['Lineitem name']||'')}</span><span class="qty">×${item['Lineitem quantity']||1}</span></div>`; });
+    o.extraLines.forEach(el => { if (el.sku||el.titre) html += `<div class="summary-item extra"><span class="sku">${el.sku}</span><span class="name">${el.titre} <em style="color:var(--accent);font-size:11px;">(ajout manuel)</em></span><span class="qty">×${el.qty}</span></div>`; });
+    html += '</div></div>';
+  });
+  body.innerHTML = html;
+}
+
+function generateAndDownload() {
+  const donneur = document.getElementById('cfg-donneur').value || '11ORS';
+  const vendeur = document.getElementById('cfg-vendeur').value || '11ORS';
+  const cols = ["Donneur d'ordre","Vendeur","Date de la vente","Reference vendeur de la commande","Reference ligne de la commande","Prenom livraison","Nom livraison","Telephone portable client","Email client","Societe livraison ou Chez","Adresse de livraison (1)","Adresse de livraison (2)","Code postal de livraison","Ville de livraison","Pays de livraison","Transporteur","ID Relais","Message transporteur","Port HT","Port TTC","Devis","Assurance","Ref article","Titre","Quantite","Prix de vente HT","Prix de vente TTC"];
+  const lines = [cols.join('|')];
+  selected.forEach(n => {
+    const o = allOrders[n]; const transport = getTransporteur(o);
+    const date = formatDate(o.header['Created at']);
+    const [prenom, nom] = splitName(o.header['Shipping Name']||'');
+    const addr2 = (o.header['Shipping Address2']||'') === 'NaN' ? '' : (o.header['Shipping Address2']||'');
+    const base = { "Donneur d'ordre": donneur, Vendeur: vendeur, "Date de la vente": date, "Reference vendeur de la commande": n };
+    const hrow = { ...base, "Reference ligne de la commande": 0, "Prenom livraison": prenom, "Nom livraison": nom, "Telephone portable client": formatPhone(o.header['Shipping Phone']), "Email client": o.header['Email']||'', "Societe livraison ou Chez": '', "Adresse de livraison (1)": o.header['Shipping Address1']||'', "Adresse de livraison (2)": addr2, "Code postal de livraison": cleanZip(o.header['Shipping Zip']||''), "Ville de livraison": o.header['Shipping City']||'', "Pays de livraison": o.header['Shipping Country']||'', Transporteur: transport, "ID Relais": '', "Message transporteur": '', "Port HT": '', "Port TTC": '', Devis: 'EUR', Assurance: '', "Ref article": '', Titre: '', Quantite: '', "Prix de vente HT": '', "Prix de vente TTC": '' };
+    lines.push(cols.map(c => hrow[c]===undefined?'':hrow[c]).join('|'));
+    let lineNum = 1;
+    o.items.forEach(item => {
+      const r = { ...base, "Reference ligne de la commande": lineNum++, "Prenom livraison": '', "Nom livraison": '', "Telephone portable client": '', "Email client": '', "Societe livraison ou Chez": '', "Adresse de livraison (1)": '', "Adresse de livraison (2)": '', "Code postal de livraison": '', "Ville de livraison": '', "Pays de livraison": '', Transporteur: '', "ID Relais": '', "Message transporteur": '', "Port HT": '', "Port TTC": '', Devis: '', Assurance: '', "Ref article": cleanSku(item['Lineitem sku']), Titre: cleanTitre(item['Lineitem name']), Quantite: item['Lineitem quantity']||1, "Prix de vente HT": '', "Prix de vente TTC": '' };
+      lines.push(cols.map(c => r[c]===undefined?'':r[c]).join('|'));
+    });
+    o.extraLines.forEach(el => {
+      if (!el.sku && !el.titre) return;
+      const r = { ...base, "Reference ligne de la commande": lineNum++, "Prenom livraison": '', "Nom livraison": '', "Telephone portable client": '', "Email client": '', "Societe livraison ou Chez": '', "Adresse de livraison (1)": '', "Adresse de livraison (2)": '', "Code postal de livraison": '', "Ville de livraison": '', "Pays de livraison": '', Transporteur: '', "ID Relais": '', "Message transporteur": '', "Port HT": '', "Port TTC": '', Devis: '', Assurance: '', "Ref article": el.sku, Titre: el.titre, Quantite: el.qty||1, "Prix de vente HT": '', "Prix de vente TTC": '' };
+      lines.push(cols.map(c => r[c]===undefined?'':r[c]).join('|'));
+    });
+  });
+  const today = new Date();
+  const fname = `${String(today.getDate()).padStart(2,'0')}${String(today.getMonth()+1).padStart(2,'0')}${today.getFullYear()}.csv`;
+  const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = fname; a.click();
+  URL.revokeObjectURL(url);
+  toast(`✅ ${fname} téléchargé — ${selected.size} commandes`);
+}
+
+function formatDate(s) { if (!s) return ''; const d = new Date(s); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+function splitName(full) { const parts = full.trim().split(/\s+/); if (!parts.length) return ['','']; return [parts[0].charAt(0).toUpperCase()+parts[0].slice(1).toLowerCase(), parts.slice(1).map(x=>x.charAt(0).toUpperCase()+x.slice(1).toLowerCase()).join(' ')]; }
+function formatPhone(phone) { if (!phone||phone==='NaN') return ''; let s=String(phone); if(s.includes('.'))s=s.split('.')[0]; const d=s.replace(/\D/g,''); if(d.startsWith('33')&&d.length===11){const x=d.slice(2);return `+33 ${x[0]} ${x.slice(1,3)} ${x.slice(3,5)} ${x.slice(5,7)} ${x.slice(7,9)}`;} if(d.startsWith('0')&&d.length===10){const x=d.slice(1);return `+33 ${x[0]} ${x.slice(1,3)} ${x.slice(3,5)} ${x.slice(5,7)} ${x.slice(7,9)}`;} return phone; }
+function cleanZip(z) { let s=String(z).trim(); if(s.startsWith("'"))s=s.slice(1); if(s.includes('.'))s=s.split('.')[0]; return s; }
+function cleanTitre(name) { return name.trim().replace(/\s*-\s*[A-Z]{1,2}(\s*\(.*?\))?$/,''); }
+function cleanSku(sku) { return (sku||'').trim(); }
+function toast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+
+function checkPwd() {
+  const val = document.getElementById('pwd-input').value;
+  if (localStorage.getItem('bkc_pwd_ok') === 'bkc2024' || val === 'bkc2024') {
+    localStorage.setItem('bkc_pwd_ok','bkc2024');
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('app-wrap').style.display = 'block';
+  } else {
+    const err = document.getElementById('lock-error');
+    err.style.display = 'block'; document.getElementById('pwd-input').value = '';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+if (localStorage.getItem('bkc_pwd_ok') === 'bkc2024') {
+  document.getElementById('lock-screen').style.display = 'none';
+  document.getElementById('app-wrap').style.display = 'block';
+}
+</script>
+</div>
+</body>
+</html>
