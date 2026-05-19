@@ -128,6 +128,13 @@ button,.btn { font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:var(
 .extra-btn-del:hover { color:var(--red);background:var(--red-light); }
 .add-line-btn { font-size:11px;color:var(--accent-mid);background:none;border:1px dashed var(--accent-mid);border-radius:var(--radius);padding:3px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;margin-top:4px;transition:background 0.15s; }
 .add-line-btn:hover { background:var(--accent-light); }
+.item-sku-edit { font-family:'DM Mono',monospace;font-size:11px;width:120px;flex-shrink:0; }
+.item-name-edit { flex:1; }
+.item-qty-edit { width:44px;text-align:center;flex-shrink:0; }
+.item-sku-edit,.item-name-edit,.item-qty-edit { border:1px solid transparent;border-radius:5px;padding:3px 6px;background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;transition:border-color 0.15s,background 0.15s; }
+.item-sku-edit { font-family:'DM Mono',monospace;font-size:11px; }
+.item-sku-edit:hover,.item-name-edit:hover,.item-qty-edit:hover { border-color:var(--border2);background:var(--bg); }
+.item-sku-edit:focus,.item-name-edit:focus,.item-qty-edit:focus { border-color:var(--accent-mid);background:#fff; }
 
 /* ── SAV Modal ── */
 .modal-bg { position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:500;display:none;align-items:center;justify-content:center; }
@@ -303,34 +310,30 @@ button,.btn { font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:var(
   </div>
 </div>
 
-<!-- Known SKUs -->
+<!-- Known SKUs — catalogue complet 51 produits -->
 <datalist id="known-skus">
-  <option value="SAISINR">
-  <option value="JONCOR_S">
-  <option value="JONCOR_M">
-  <option value="JONCOR_L">
-  <option value="JONCARGENT_S">
-  <option value="JONCARGENT_M">
-  <option value="JONC_ROSEPOUDRE_M">
-  <option value="JONC_VERTANTIQUE_M">
-  <option value="JONCTORSADOR_M">
-  <option value="BAGUEOR_M">
-  <option value="PACKSPIRITJ">
+  <option value="BAGUE_ARGENT_M"><option value="BAGUEOR_M">
+  <option value="JONCTORSAD3C_S">
+  <option value="SAISINR"><option value="PACKSPIRITJ"><option value="PACKSPIRIT">
+  <option value="JONCARGENT_S"><option value="JONCARGENT_M"><option value="JONCARGENT_L"><option value="JONCARGENT_XL">
+  <option value="JONCFINARGENT_M"><option value="JONCFINARGENT_L">
+  <option value="JONCTORSADARGENT_M"><option value="JONCTORSADARGENT_L">
+  <option value="JONC_ARGENT_TRESSE_M"><option value="JONC_ARGENT_TRESSE_L">
+  <option value="JONCCHAMP_M"><option value="JONCCHAMP_L">
+  <option value="JONC_CHOCO_M"><option value="JONC_CHOCO_L">
+  <option value="JONCCUIVRE_M"><option value="JONCCUIVRE_L">
+  <option value="JONCOR_XS"><option value="JONCOR_S"><option value="JONCOR_M"><option value="JONCOR_L">
+  <option value="JONC_ORANTIQUE_M"><option value="JONC_ORANTIQUE_L">
+  <option value="JONCFINOR_XS"><option value="JONCFINOR_S"><option value="JONCFINOR_M"><option value="JONCFINOR_L">
+  <option value="JONCROSE_XS"><option value="JONCROSE_S"><option value="JONCROSE_M"><option value="JONCROSE_L">
+  <option value="JONC_ORROSE_FIN_M"><option value="JONC_ORROSE_FIN_L">
+  <option value="JONC_ORROSE_TORSADE_M"><option value="JONC_ORROSE_TORSADE_L">
+  <option value="JONC_ORROSE_TRESSE_M"><option value="JONC_ORROSE_TRESSE_L">
+  <option value="JONCTORSADOR_S"><option value="JONCTORSADOR_M"><option value="JONCTORSADOR_L">
+  <option value="JONC_OR_TRESSE_M"><option value="JONC_OR_TRESSE_L">
+  <option value="JONC_ROSEPOUDRE_M"><option value="JONC_ROSEPOUDRE_L">
+  <option value="JONC_VERTANTIQUE_M"><option value="JONC_VERTANTIQUE_L">
 </datalist>
-
-<div id="sku-titles" style="display:none">
-  <span data-sku="SAISINR" data-titre="Fil Rouge Sacré Bouddhiste"></span>
-  <span data-sku="JONCOR_S" data-titre="Jonc Bouddhiste Or"></span>
-  <span data-sku="JONCOR_M" data-titre="Jonc Bouddhiste Or"></span>
-  <span data-sku="JONCOR_L" data-titre="Jonc Bouddhiste Or"></span>
-  <span data-sku="JONCARGENT_S" data-titre="Jonc Bouddhiste Argent"></span>
-  <span data-sku="JONCARGENT_M" data-titre="Jonc Bouddhiste Argent"></span>
-  <span data-sku="JONC_ROSEPOUDRE_M" data-titre="Jonc Bouddhiste Rose Poudré"></span>
-  <span data-sku="JONC_VERTANTIQUE_M" data-titre="Jonc Bouddhiste Vert Antique"></span>
-  <span data-sku="JONCTORSADOR_M" data-titre="Jonc Bouddhiste Torsadé Or"></span>
-  <span data-sku="BAGUEOR_M" data-titre="Bague Bouddhiste Or"></span>
-  <span data-sku="PACKSPIRITJ" data-titre="Ensemble Spirituel Bouddhiste – Yantra + Bracelet Rouge Sai Sin + Prière"></span>
-</div>
 
 <!-- Header -->
 <header class="app-header">
@@ -404,8 +407,60 @@ const TRANSPORT_OPTIONS = [
   { code:'HEX',        label:'HEX — Chrono13 / Express' },
 ];
 
-const skuTitles = {};
-document.querySelectorAll('#sku-titles span').forEach(el => { skuTitles[el.dataset.sku] = el.dataset.titre; });
+// ── SKU catalogue complet ──
+const skuTitles = {
+  "BAGUE_ARGENT_M":"Bague Bouddhiste Argent",
+  "BAGUEOR_M":"Bague Bouddhiste Or",
+  "JONCTORSAD3C_S":"Jonc Bouddhiste Torsadé 3 Couleurs",
+  "SAISINR":"Fil Rouge Sacré Bouddhiste",
+  "PACKSPIRITJ":"Ensemble Spirituel Bouddhiste – Yantra + Bracelet Rouge Sai Sin + Prière",
+  "PACKSPIRIT":"Ensemble Spirituel Bouddhiste – Yantra Jaune & Bracelet Rouge Sai Sin",
+  "JONCARGENT_S":"Jonc Bouddhiste Argent",
+  "JONCARGENT_M":"Jonc Bouddhiste Argent",
+  "JONCARGENT_L":"Jonc Bouddhiste Argent",
+  "JONCARGENT_XL":"Jonc Bouddhiste Argent",
+  "JONCFINARGENT_M":"Jonc Bouddhiste Argent Fin",
+  "JONCFINARGENT_L":"Jonc Bouddhiste Argent Fin",
+  "JONCTORSADARGENT_M":"Jonc Bouddhiste Argent Torsadé",
+  "JONCTORSADARGENT_L":"Jonc Bouddhiste Argent Torsadé",
+  "JONC_ARGENT_TRESSE_M":"Jonc Bouddhiste Argent Tressé",
+  "JONC_ARGENT_TRESSE_L":"Jonc Bouddhiste Argent Tressé",
+  "JONCCHAMP_M":"Jonc Bouddhiste Champagne",
+  "JONCCHAMP_L":"Jonc Bouddhiste Champagne",
+  "JONC_CHOCO_M":"Jonc Bouddhiste Chocolat",
+  "JONC_CHOCO_L":"Jonc Bouddhiste Chocolat",
+  "JONCCUIVRE_M":"Jonc Bouddhiste Cuivre",
+  "JONCCUIVRE_L":"Jonc Bouddhiste Cuivre",
+  "JONCOR_XS":"Jonc Bouddhiste Or",
+  "JONCOR_S":"Jonc Bouddhiste Or",
+  "JONCOR_M":"Jonc Bouddhiste Or",
+  "JONCOR_L":"Jonc Bouddhiste Or",
+  "JONC_ORANTIQUE_M":"Jonc Bouddhiste Or Antique",
+  "JONC_ORANTIQUE_L":"Jonc Bouddhiste Or Antique",
+  "JONCFINOR_XS":"Jonc Bouddhiste Or Fin",
+  "JONCFINOR_S":"Jonc Bouddhiste Or Fin",
+  "JONCFINOR_M":"Jonc Bouddhiste Or Fin",
+  "JONCFINOR_L":"Jonc Bouddhiste Or Fin",
+  "JONCROSE_XS":"Jonc Bouddhiste Or Rose",
+  "JONCROSE_S":"Jonc Bouddhiste Or Rose",
+  "JONCROSE_M":"Jonc Bouddhiste Or Rose",
+  "JONCROSE_L":"Jonc Bouddhiste Or Rose",
+  "JONC_ORROSE_FIN_M":"Jonc Bouddhiste Or Rose Fin",
+  "JONC_ORROSE_FIN_L":"Jonc Bouddhiste Or Rose Fin",
+  "JONC_ORROSE_TORSADE_M":"Jonc Bouddhiste Or Rose Torsadé",
+  "JONC_ORROSE_TORSADE_L":"Jonc Bouddhiste Or Rose Torsadé",
+  "JONC_ORROSE_TRESSE_M":"Jonc Bouddhiste Or Rose Tressé",
+  "JONC_ORROSE_TRESSE_L":"Jonc Bouddhiste Or Rose Tressé",
+  "JONCTORSADOR_S":"Jonc Bouddhiste Or Torsadé",
+  "JONCTORSADOR_M":"Jonc Bouddhiste Or Torsadé",
+  "JONCTORSADOR_L":"Jonc Bouddhiste Or Torsadé",
+  "JONC_OR_TRESSE_M":"Jonc Bouddhiste Or Tressé",
+  "JONC_OR_TRESSE_L":"Jonc Bouddhiste Or Tressé",
+  "JONC_ROSEPOUDRE_M":"Jonc Bouddhiste Rose Poudré",
+  "JONC_ROSEPOUDRE_L":"Jonc Bouddhiste Rose Poudré",
+  "JONC_VERTANTIQUE_M":"Jonc Bouddhiste Vert Antique",
+  "JONC_VERTANTIQUE_L":"Jonc Bouddhiste Vert Antique"
+};
 
 // ── State ──
 let allOrders = {}, orderList = [], selected = new Set();
@@ -519,13 +574,42 @@ function renderOrderCard(n, container) {
   // Items HTML
   let itemsHTML = '';
   if (o.isSav) {
-    itemsHTML = (o.items||[]).map(item =>
-      `<div class="item-row"><span class="item-sku">${item.sku||''}</span><span class="item-name">${item.titre||''}</span><span class="item-qty">×${item.qty||1}</span></div>`
+    itemsHTML = (o.items||[]).map((item, idx) =>
+      `<div class="item-row" id="irow-${n.replace(/[^a-z0-9]/gi,'')}-${idx}">
+        <input class="item-sku-edit inp-sku" type="text" list="known-skus" value="${item.sku||''}" placeholder="SKU"
+          onchange="updateItemField('${n}',${idx},'sku',this.value)"
+          oninput="autoItemTitre('${n}',${idx},this.value,true)">
+        <input class="item-name-edit inp-titre" type="text" value="${item.titre||''}" placeholder="Titre"
+          id="item-titre-${n.replace(/[^a-z0-9]/gi,'')}-${idx}"
+          onchange="updateItemField('${n}',${idx},'titre',this.value)">
+        <input class="item-qty-edit inp-qty" type="number" min="1" value="${item.qty||1}"
+          onchange="updateItemField('${n}',${idx},'qty',parseInt(this.value)||1)">
+        <button class="extra-btn-del" onclick="deleteItemRow('${n}',${idx})" title="Supprimer">×</button>
+      </div>`
     ).join('');
   } else {
-    itemsHTML = o.items.map(item =>
-      `<div class="item-row"><span class="item-sku">${item['Lineitem sku']||''}</span><span class="item-name">${cleanTitre(item['Lineitem name']||'')}</span><span class="item-qty">×${item['Lineitem quantity']||1}</span><span class="item-price">${parseFloat(item['Lineitem price']||0).toFixed(2)} €</span></div>`
-    ).join('');
+    itemsHTML = o.items.map((item, idx) => {
+      const sku = item['Lineitem sku']||'';
+      const titre = cleanTitre(item['Lineitem name']||'');
+      const qty = item['Lineitem quantity']||1;
+      const price = parseFloat(item['Lineitem price']||0).toFixed(2);
+      // Store edits on the item object
+      if (!item._sku) item._sku = sku;
+      if (!item._titre) item._titre = titre;
+      if (!item._qty) item._qty = qty;
+      return `<div class="item-row" id="irow-${n.replace(/[^a-z0-9]/gi,'')}-${idx}">
+        <input class="item-sku-edit inp-sku" type="text" list="known-skus" value="${item._sku}" placeholder="SKU"
+          onchange="updateShopifyItem('${n}',${idx},'sku',this.value)"
+          oninput="autoItemTitre('${n}',${idx},this.value,false)">
+        <input class="item-name-edit inp-titre" type="text" value="${item._titre}" placeholder="Titre"
+          id="item-titre-${n.replace(/[^a-z0-9]/gi,'')}-${idx}"
+          onchange="updateShopifyItem('${n}',${idx},'titre',this.value)">
+        <input class="item-qty-edit inp-qty" type="number" min="1" value="${item._qty}"
+          onchange="updateShopifyItem('${n}',${idx},'qty',parseInt(this.value)||1)">
+        <span class="item-price">${price} €</span>
+        <button class="extra-btn-del" onclick="deleteShopifyItem('${n}',${idx})" title="Supprimer">×</button>
+      </div>`;
+    }).join('');
   }
 
   card.innerHTML = `
@@ -570,6 +654,52 @@ function toggleCard(n) {
 
 function setTransportOverride(n, val) {
   allOrders[n].transportOverride = val;
+  updateSummary();
+}
+
+// ── Edit / delete imported items ──
+function autoItemTitre(orderNum, idx, sku, isSav) {
+  const titre = skuTitles[sku.trim()];
+  if (!titre) return;
+  const id = orderNum.replace(/[^a-z0-9]/gi,'');
+  const el = document.getElementById(`item-titre-${id}-${idx}`);
+  if (el) el.value = titre;
+  if (isSav) { allOrders[orderNum].items[idx].sku = sku.trim(); allOrders[orderNum].items[idx].titre = titre; }
+  else { allOrders[orderNum].items[idx]._sku = sku.trim(); allOrders[orderNum].items[idx]._titre = titre; }
+  updateSummary();
+}
+
+function updateItemField(orderNum, idx, field, val) {
+  allOrders[orderNum].items[idx][field] = val;
+  updateSummary();
+}
+
+function updateShopifyItem(orderNum, idx, field, val) {
+  if (field === 'sku') allOrders[orderNum].items[idx]._sku = val;
+  else if (field === 'titre') allOrders[orderNum].items[idx]._titre = val;
+  else if (field === 'qty') allOrders[orderNum].items[idx]._qty = val;
+  updateSummary();
+}
+
+function deleteItemRow(orderNum, idx) {
+  allOrders[orderNum].items.splice(idx, 1);
+  const id = orderNum.replace(/[^a-z0-9]/gi,'');
+  const el = document.getElementById(`irow-${id}-${idx}`); if (el) el.remove();
+  // Re-render the whole card to fix indices
+  const card = document.getElementById(`card-${id}`);
+  const wasExpanded = card && card.classList.contains('expanded');
+  renderOrders();
+  if (wasExpanded) { const c2 = document.getElementById(`card-${id}`); if(c2) c2.classList.add('expanded'); }
+  updateSummary();
+}
+
+function deleteShopifyItem(orderNum, idx) {
+  allOrders[orderNum].items.splice(idx, 1);
+  const id = orderNum.replace(/[^a-z0-9]/gi,'');
+  const card = document.getElementById(`card-${id}`);
+  const wasExpanded = card && card.classList.contains('expanded');
+  renderOrders();
+  if (wasExpanded) { const c2 = document.getElementById(`card-${id}`); if(c2) c2.classList.add('expanded'); }
   updateSummary();
 }
 
@@ -770,9 +900,9 @@ function updateSummary() {
       <div class="summary-items">`;
     const items = o.isSav ? o.items : o.items;
     items.forEach(item => {
-      const sku = o.isSav ? item.sku : (item['Lineitem sku']||'');
-      const titre = o.isSav ? item.titre : cleanTitre(item['Lineitem name']||'');
-      const qty = o.isSav ? item.qty : (item['Lineitem quantity']||1);
+      const sku = o.isSav ? item.sku : (item._sku || item['Lineitem sku']||'');
+      const titre = o.isSav ? item.titre : (item._titre || cleanTitre(item['Lineitem name']||''));
+      const qty = o.isSav ? item.qty : (item._qty || item['Lineitem quantity']||1);
       html += `<div class="summary-item"><span class="sku">${sku}</span><span class="name">${titre}</span><span class="qty">×${qty}</span></div>`;
     });
     if (!o.isSav) {
@@ -828,9 +958,9 @@ function generateAndDownload() {
     let lineNum = 1;
     const items = o.isSav ? o.items : o.items;
     items.forEach(item => {
-      const sku = o.isSav ? item.sku : cleanSku(item['Lineitem sku']);
-      const titre = o.isSav ? item.titre : cleanTitre(item['Lineitem name']);
-      const qty = o.isSav ? (item.qty||1) : (item['Lineitem quantity']||1);
+      const sku = o.isSav ? item.sku : cleanSku(item._sku || item['Lineitem sku']);
+      const titre = o.isSav ? item.titre : (item._titre || cleanTitre(item['Lineitem name']));
+      const qty = o.isSav ? (item.qty||1) : (item._qty || item['Lineitem quantity']||1);
       const r = { ...base, "Reference ligne de la commande":lineNum++, "Prenom livraison":'', "Nom livraison":'', "Telephone portable client":'', "Email client":'', "Societe livraison ou Chez":'', "Adresse de livraison (1)":'', "Adresse de livraison (2)":'', "Code postal de livraison":'', "Ville de livraison":'', "Pays de livraison":'', Transporteur:'', "ID Relais":'', "Message transporteur":'', "Port HT":'', "Port TTC":'', Devis:'', Assurance:'', "Ref article":sku, Titre:titre, Quantite:qty, "Prix de vente HT":'', "Prix de vente TTC":'' };
       lines.push(cols.map(c => r[c]===undefined?'':r[c]).join('|'));
     });
