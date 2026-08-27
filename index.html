@@ -95,6 +95,10 @@ button,.btn { font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:var(
 .order-card.selected .order-check { background:var(--accent);border-color:var(--accent);color:white; }
 .order-card.is-sav.selected .order-check { background:var(--orange);border-color:var(--orange); }
 .order-num { font-family:'DM Mono',monospace;font-size:12px;font-weight:500;flex-shrink:0; }
+.order-num-edit { font-family:'DM Mono',monospace;font-size:12px;font-weight:500;flex-shrink:0;width:104px;border:1px solid transparent;border-radius:5px;padding:3px 5px;background:transparent;color:var(--text);transition:border-color 0.15s,background 0.15s; }
+.order-num-edit:hover { border-color:var(--border2);background:var(--surface2); }
+.order-num-edit:focus { outline:none;border-color:var(--accent-mid);background:#fff;width:170px; }
+.order-num-edit.renamed { color:var(--accent);font-weight:600;border-color:var(--accent-light);background:var(--accent-light);width:170px; }
 .order-name { font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .order-meta { font-size:11px;color:var(--text3);flex-shrink:0; }
 .order-total { font-size:13px;font-weight:600;flex-shrink:0; }
@@ -496,7 +500,7 @@ function buildOrders(rows) {
 
   rows.forEach(r => {
     const n = r['Name'];
-    if (!newAllOrders[n]) { newAllOrders[n] = { header:r, items:[], extraLines:[], transportOverride:null, isSav:false }; newOrderList.push(n); }
+    if (!newAllOrders[n]) { newAllOrders[n] = { header:r, items:[], extraLines:[], transportOverride:null, isSav:false, refExport:n }; newOrderList.push(n); }
     newAllOrders[n].items.push(r);
   });
 
@@ -616,7 +620,10 @@ function renderOrderCard(n, container) {
     <div class="order-card-header" onclick="toggleCard('${n}')">
       <div class="order-check">✓</div>
       ${o.isSav ? '<span class="badge badge-sav" style="font-size:9px;">SAV</span>' : ''}
-      <span class="order-num">${n}</span>
+      <input class="order-num-edit${getRef(n)!==n?' renamed':''}" type="text" value="${escAttr(getRef(n))}"
+        title="Référence envoyée à l'entrepôt — modifiable (ex : #1234 - exp2)"
+        onclick="event.stopPropagation()" ondblclick="event.stopPropagation()"
+        onchange="setOrderRef('${n}',this.value,this)">
       <span class="order-name">${shippingName}</span>
       <span class="order-meta">${date}</span>
       <select class="transport-select" onclick="event.stopPropagation()" onchange="setTransportOverride('${n}',this.value)">${selectOpts}</select>
@@ -650,6 +657,22 @@ function toggleCard(n) {
     else { selected.add(n); card.classList.add('selected'); }
     updateStats(); updateSummary();
   }
+}
+
+// ── Référence exportée (modifiable : #1234 - exp2 pour un renvoi SAV) ──
+function escAttr(v) { return String(v==null?'':v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function getRef(n) {
+  const o = allOrders[n];
+  const r = o && o.refExport != null ? String(o.refExport).trim() : '';
+  return r || n;
+}
+
+function setOrderRef(n, val, el) {
+  const v = (val||'').trim();
+  allOrders[n].refExport = v || n;
+  if (el) { el.value = getRef(n); el.classList.toggle('renamed', getRef(n) !== n); }
+  updateSummary();
 }
 
 function setTransportOverride(n, val) {
@@ -824,6 +847,7 @@ function saveSavOrder() {
 
   allOrders[ref] = {
     isSav: true,
+    refExport: ref,
     transportOverride: transport,
     extraLines: [],
     items: validItems,
@@ -893,7 +917,7 @@ function updateSummary() {
       : (o.header['Shipping Name']||'');
     html += `<div class="summary-order${o.isSav?' is-sav':''}">
       <div class="summary-order-head">
-        <strong>${n}</strong>
+        <strong>${getRef(n)}</strong>
         <span class="client">${name}</span>
         ${badgeForCode(t)}
       </div>
@@ -921,6 +945,14 @@ function generateAndDownload() {
   const vendeur = document.getElementById('cfg-vendeur').value || '11ORS';
   const cols = ["Donneur d'ordre","Vendeur","Date de la vente","Reference vendeur de la commande","Reference ligne de la commande","Prenom livraison","Nom livraison","Telephone portable client","Email client","Societe livraison ou Chez","Adresse de livraison (1)","Adresse de livraison (2)","Code postal de livraison","Ville de livraison","Pays de livraison","Transporteur","ID Relais","Message transporteur","Port HT","Port TTC","Devis","Assurance","Ref article","Titre","Quantite","Prix de vente HT","Prix de vente TTC"];
   const lines = [cols.join('|')];
+
+  // Garde-fou : deux commandes exportées sous la même référence
+  const seenRefs = {}, dupRefs = [];
+  selected.forEach(n => { const r = getRef(n); if (seenRefs[r]) { if (dupRefs.indexOf(r) === -1) dupRefs.push(r); } else seenRefs[r] = true; });
+  if (dupRefs.length && !confirm(`Attention : ${dupRefs.length} référence(s) en double dans l'export (${dupRefs.join(', ')}).
+L'entrepôt risque de fusionner ces commandes.
+
+Générer quand même ?`)) return;
 
   selected.forEach(n => {
     const o = allOrders[n]; const transport = getTransporteur(o);
@@ -951,7 +983,7 @@ function generateAndDownload() {
       country = o.header['Shipping Country']||'';
     }
 
-    const base = { "Donneur d'ordre":donneur, Vendeur:vendeur, "Date de la vente":date, "Reference vendeur de la commande":n };
+    const base = { "Donneur d'ordre":donneur, Vendeur:vendeur, "Date de la vente":date, "Reference vendeur de la commande":getRef(n) };
     const hrow = { ...base, "Reference ligne de la commande":0, "Prenom livraison":prenom, "Nom livraison":nom, "Telephone portable client":phone, "Email client":email, "Societe livraison ou Chez":societe, "Adresse de livraison (1)":addr1, "Adresse de livraison (2)":addr2, "Code postal de livraison":zip, "Ville de livraison":city, "Pays de livraison":country, Transporteur:transport, "ID Relais":'', "Message transporteur":'', "Port HT":'', "Port TTC":'', Devis:'EUR', Assurance:'', "Ref article":'', Titre:'', Quantite:'', "Prix de vente HT":'', "Prix de vente TTC":'' };
     lines.push(cols.map(c => hrow[c]===undefined?'':hrow[c]).join('|'));
 
