@@ -485,6 +485,11 @@ const skuTitles = {
   "POCHETTE-LIN-OFFERTE":"Pochette en lin — Offerte",
   "SAC-ORGANZA-BEIGE":"Pochette cadeau en lin",
 
+  // ── Commandes pro (fiches en brouillon : un article = une commande revendeur) ──
+  "COMMANDE-PRO-1500":"Commande pro #1500 — Lot de 25 bracelets",
+  "COMMANDE-PRO-1512":"Commande pro #1512 — Lot de 68 bracelets",
+  "COMMANDE-PRO-1530":"Commande pro #1530 — Lot de 54 bracelets",
+
   // ── Pochette de voyage (non référencée dans le menu, mais en stock et vendable) ──
   "PochVoyage_Vert":"Pochette de voyage Bâan Kumlaï Vert",
   "PochVoyage_Violet":"Pochette de voyage Bâan Kumlaï Violet",
@@ -495,6 +500,16 @@ const skuTitles = {
   "PACKSPIRITJ":"Ensemble Spirituel Bouddhiste – Yantra + Bracelet Rouge Sai Sin + Prière",
   "JONCARGENT_XL":"Jonc Bouddhiste Argent"
 };
+
+// Titre d'un SKU. Les articles « commande pro » sont créés au fil des commandes
+// revendeur : on déduit leur titre du code plutôt que d'attendre une mise à jour de la
+// base, sinon le soft est toujours en retard d'une commande.
+function titrePour(sku) {
+  const s = String(sku==null?'':sku).trim();
+  if (skuTitles[s]) return skuTitles[s];
+  const m = s.toUpperCase().match(/^COMMANDE-PRO-(\d+)$/);
+  return m ? `Commande pro #${m[1]}` : '';
+}
 
 // Remplit la liste d'autocomplétion des SKU depuis la base article ci-dessus
 function renderSkuDatalist() {
@@ -928,7 +943,7 @@ function setTransportOverride(n, val) {
 
 // ── Edit / delete imported items ──
 function autoItemTitre(orderNum, idx, sku, isSav) {
-  const titre = skuTitles[sku.trim()];
+  const titre = titrePour(sku);
   if (!titre) return;
   const id = orderNum.replace(/[^a-z0-9]/gi,'');
   const el = document.getElementById(`item-titre-${id}-${idx}`);
@@ -1020,7 +1035,7 @@ function renderExtraLine(orderNum, idx) {
 }
 
 function autoFillTitre(orderNum, idx, sku) {
-  const titre = skuTitles[sku.trim()];
+  const titre = titrePour(sku);
   if (titre) {
     allOrders[orderNum].extraLines[idx].sku = sku.trim();
     allOrders[orderNum].extraLines[idx].titre = titre;
@@ -1101,7 +1116,7 @@ function renderSavItems() {
 }
 
 function autoFillSavTitre(idx, sku) {
-  const titre = skuTitles[sku.trim()];
+  const titre = titrePour(sku);
   if (titre) {
     savItems[idx].sku = sku.trim(); savItems[idx].titre = titre;
     const el = document.getElementById(`sav-titre-${idx}`);
