@@ -140,6 +140,7 @@ button,.btn { font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:var(
 .item-sku-edit:hover,.item-name-edit:hover,.item-qty-edit:hover { border-color:var(--border2);background:var(--bg); }
 .item-sku-edit:focus,.item-name-edit:focus,.item-qty-edit:focus { border-color:var(--accent-mid);background:#fff; }
 .item-lot-tag { font-family:'DM Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.04em;color:#8a5a00;background:#fff3d6;border:1px solid #f0d089;border-radius:4px;padding:2px 4px;flex-shrink:0;cursor:help; }
+.item-pro-tag { font-family:'DM Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.04em;color:#1d5c8a;background:#e4f1fa;border:1px solid #9cc8e4;border-radius:4px;padding:2px 4px;flex-shrink:0;cursor:help; }
 .inp-sku.sku-vide { border-color:#e5484d !important;background:#fff1f1; }
 .lot-pick { display:flex;gap:6px;align-items:center;margin:6px 0 2px; }
 .lot-pick select { font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--border2);border-radius:5px;padding:4px 6px;background:#fff;color:var(--text); }
@@ -505,6 +506,99 @@ function renderSkuDatalist() {
 }
 renderSkuDatalist();
 
+// ── Commandes pro : référence du bon de commande -> SKU du site ──
+// Le bon de commande revendeur a ses propres codes (CLAS-OR-M, TRE6-ARG-S…). Le serveur
+// kumlai-pro pose déjà le SKU du site quand il le connaît, mais les commandes passées
+// avant que sa table ne soit complète arrivent avec le code interne, que Dock Avenue ne
+// connaît pas. On traduit donc ici aussi. Source : kumlai-pro/sku_site.json (17/11/2026).
+const refsPro = {
+  // Joncs avec mantra
+  "CLAS-ARG-L":"JONCARGENT_L",
+  "CLAS-ARG-M":"JONCARGENT_M",
+  "CLAS-ARG-S":"JONCARGENT_S",
+  "CLAS-CHAMP-L":"JONCCHAMP_L",
+  "CLAS-CHAMP-M":"JONCCHAMP_M",
+  "CLAS-CHAMP-S":"JONCCHAMP_S",
+  "CLAS-CHOC-L":"JONC_CHOCO_L",
+  "CLAS-CHOC-M":"JONC_CHOCO_M",
+  "CLAS-CHOC-S":"JONC_CHOCO_S",
+  "CLAS-CUIV-L":"JONCCUIVRE_L",
+  "CLAS-CUIV-M":"JONCCUIVRE_M",
+  "CLAS-CUIV-S":"JONCCUIVRE_S",
+  "CLAS-OR-L":"JONCOR_L",
+  "CLAS-OR-M":"JONCOR_M",
+  "CLAS-OR-S":"JONCOR_S",
+  "CLAS-OR-XSE":"JONCOR_XS",
+  "CLAS-ORANT-L":"JONC_ORANTIQUE_L",
+  "CLAS-ORANT-M":"JONC_ORANTIQUE_M",
+  "CLAS-ORANT-S":"JONC_ORANTIQUE_S",
+  "CLAS-ORROS-L":"JONCROSE_L",
+  "CLAS-ORROS-M":"JONCROSE_M",
+  "CLAS-ORROS-S":"JONCROSE_S",
+  "CLAS-ORROS-XSE":"JONCROSE_XS",
+  "CLAS-ROSEP-L":"JONC_ROSEPOUDRE_L",
+  "CLAS-ROSEP-M":"JONC_ROSEPOUDRE_M",
+  "CLAS-ROSEP-S":"JONC_ROSEPOUDRE_S",
+  "CLAS-VERTA-L":"JONC_VERTANTIQUE_L",
+  "CLAS-VERTA-M":"JONC_VERTANTIQUE_M",
+  "CLAS-VERTA-S":"JONC_VERTANTIQUE_S",
+  // Joncs fins
+  "FIN-ARG-L":"JONCFINARGENT_L",
+  "FIN-ARG-M":"JONCFINARGENT_M",
+  "FIN-ARG-S":"JONCFINARGENT_S",
+  "FIN-OR-L":"JONCFINOR_L",
+  "FIN-OR-M":"JONCFINOR_M",
+  "FIN-OR-S":"JONCFINOR_S",
+  "FIN-OR-XSE":"JONCFINOR_XS",
+  "FIN-ORROS-L":"JONC_ORROSE_FIN_L",
+  "FIN-ORROS-M":"JONC_ORROSE_FIN_M",
+  "FIN-ORROS-S":"JONC_ORROSE_FIN_S",
+  // Joncs torsades
+  "TOR3-ARG-L":"JONCTORSADARGENT_L",
+  "TOR3-ARG-M":"JONCTORSADARGENT_M",
+  "TOR3-ARG-S":"JONCTORSADARGENT_S",
+  "TOR3-OR-L":"JONCTORSADOR_L",
+  "TOR3-OR-M":"JONCTORSADOR_M",
+  "TOR3-OR-S":"JONCTORSADOR_S",
+  "TOR3-ORROS-L":"JONC_ORROSE_TORSADE_L",
+  "TOR3-ORROS-M":"JONC_ORROSE_TORSADE_M",
+  "TOR3-ORROS-S":"JONC_ORROSE_TORSADE_S",
+  // Joncs tresses
+  "TRE6-ARG-L":"JONC_ARGENT_TRESSE_L",
+  "TRE6-ARG-M":"JONC_ARGENT_TRESSE_M",
+  "TRE6-ARG-S":"JONC_ARGENT_TRESSE_S",
+  "TRE6-OR-L":"JONC_OR_TRESSE_L",
+  "TRE6-OR-M":"JONC_OR_TRESSE_M",
+  "TRE6-OR-S":"JONC_OR_TRESSE_S",
+  "TRE6-ORROS-L":"JONC_ORROSE_TRESSE_L",
+  "TRE6-ORROS-M":"JONC_ORROSE_TRESSE_M",
+  "TRE6-ORROS-S":"JONC_ORROSE_TRESSE_S",
+  // Bagues
+  "BAG-ARG-L":"BAGUE_ARGENT_L",
+  "BAG-ARG-M":"BAGUE_ARGENT_M",
+  "BAG-OR-L":"BAGUEOR_L",
+  "BAG-OR-M":"BAGUEOR_M",
+};
+
+// Un code du bon de commande pro, traduit ou non : CLAS-OR-M, FIN-ORROS-S, BAG-ARG-L…
+const RE_REF_PRO = /^(CLAS|FIN|TOR3|TRE6|BAG)-[A-Z0-9]+-(XSE|XS|S|M|L|XL)$/i;
+function estRefPro(v) { return RE_REF_PRO.test(String(v==null?'':v).trim()); }
+
+// Remplace les codes du bon de commande par le SKU du site. Renvoie le nombre de lignes traduites.
+function traduireRefsPro(o) {
+  let n = 0;
+  (o.items||[]).forEach(item => {
+    const brut = String(item._sku || item['Lineitem sku'] || '').trim().toUpperCase();
+    const site = refsPro[brut];
+    if (!site) return;
+    n++;
+    item._sku = site;
+    item._refPro = brut;
+    if (skuTitles[site]) item._titre = skuTitles[site];
+  });
+  return n;
+}
+
 // ── Base lots : composition en SKU ──
 // Relevée le 17/11/2026 sur baankumlai.com (métachamp custom.bk_lot rendu par bk-lot.liquid).
 // Les lots n'ont PAS de SKU chez Shopify, et ils n'en auront pas : le thème ajoute les joncs
@@ -646,13 +740,17 @@ function buildOrders(rows) {
     if (allOrders[n].isSav) { selected.add(n); return; }
     if ((allOrders[n].header['Fulfillment Status']||'').toLowerCase() !== 'fulfilled') selected.add(n);
   });
-  let lotsEclates = 0;
-  orderList.forEach(n => { if (!allOrders[n].isSav) lotsEclates += eclaterLots(allOrders[n]); });
+  let lotsEclates = 0, refsProTraduites = 0;
+  orderList.forEach(n => {
+    if (allOrders[n].isSav) return;
+    lotsEclates += eclaterLots(allOrders[n]);
+    refsProTraduites += traduireRefsPro(allOrders[n]);
+  });
 
   renderOrders(); updateSummary();
   uploadZone.style.display = 'none';
   const nbCmd = rows.length > 0 ? orderList.filter(n=>!allOrders[n].isSav).length : 0;
-  toast(`✅ ${nbCmd} commandes importées${lotsEclates ? ` · ${lotsEclates} lot${lotsEclates>1?'s':''} éclaté${lotsEclates>1?'s':''} en SKU` : ''}`);
+  toast(`✅ ${nbCmd} commandes importées${lotsEclates ? ` · ${lotsEclates} lot${lotsEclates>1?'s':''} éclaté${lotsEclates>1?'s':''} en SKU` : ''}${refsProTraduites ? ` · ${refsProTraduites} réf. pro traduite${refsProTraduites>1?'s':''}` : ''}`);
 }
 
 // ── Transport ──
@@ -744,6 +842,7 @@ function renderOrderCard(n, container) {
       if (!item._qty) item._qty = qty;
       return `<div class="item-row" id="irow-${n.replace(/[^a-z0-9]/gi,'')}-${idx}">
         ${item._lot ? `<span class="item-lot-tag" title="Ligne issue du lot : ${escAttr(item._lot)}">LOT</span>` : ''}
+        ${item._refPro ? `<span class="item-pro-tag" title="Référence du bon de commande pro : ${escAttr(item._refPro)}">PRO</span>` : ''}
         <input class="item-sku-edit inp-sku${(item._sku||'').trim()?'':' sku-vide'}" type="text" list="known-skus" value="${item._sku}" placeholder="SKU"
           onchange="updateShopifyItem('${n}',${idx},'sku',this.value)"
           oninput="autoItemTitre('${n}',${idx},this.value,false)">
@@ -1135,13 +1234,16 @@ L'entrepôt risque de fusionner ces commandes.
 
 Générer quand même ?`)) return;
 
-  // Garde-fou : une ligne sans SKU n'est pas préparable par Dock Avenue
+  // Garde-fou : une ligne sans SKU — ou avec un code du bon de commande pro — n'est pas
+  // préparable par Dock Avenue, qui ne connaît que les références du site.
   const sansSku = [];
   selected.forEach(n => {
     const o = allOrders[n];
     (o.items||[]).forEach(item => {
       const s = o.isSav ? (item.sku||'') : (item._sku || item['Lineitem sku'] || '');
-      if (!String(s).trim()) sansSku.push(`${getRef(n)} : ${o.isSav ? (item.titre||'?') : cleanTitre(item['Lineitem name']||'?')}`);
+      const libelle = o.isSav ? (item.titre||'?') : cleanTitre(item['Lineitem name']||'?');
+      if (!String(s).trim()) sansSku.push(`${getRef(n)} : ${libelle}`);
+      else if (estRefPro(s)) sansSku.push(`${getRef(n)} : ${libelle} (code pro ${String(s).trim()}, sans fiche sur le site)`);
     });
     if (!o.isSav) (o.extraLines||[]).forEach(el => {
       if (String(el.titre||'').trim() && !String(el.sku||'').trim()) sansSku.push(`${getRef(n)} : ${el.titre}`);
