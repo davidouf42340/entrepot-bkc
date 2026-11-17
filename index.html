@@ -139,6 +139,13 @@ button,.btn { font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:var(
 .item-sku-edit { font-family:'DM Mono',monospace;font-size:11px; }
 .item-sku-edit:hover,.item-name-edit:hover,.item-qty-edit:hover { border-color:var(--border2);background:var(--bg); }
 .item-sku-edit:focus,.item-name-edit:focus,.item-qty-edit:focus { border-color:var(--accent-mid);background:#fff; }
+.item-lot-tag { font-family:'DM Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.04em;color:#8a5a00;background:#fff3d6;border:1px solid #f0d089;border-radius:4px;padding:2px 4px;flex-shrink:0;cursor:help; }
+.inp-sku.sku-vide { border-color:#e5484d !important;background:#fff1f1; }
+.lot-pick { display:flex;gap:6px;align-items:center;margin:6px 0 2px; }
+.lot-pick select { font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--border2);border-radius:5px;padding:4px 6px;background:#fff;color:var(--text); }
+.lot-pick select.lot-sel { max-width:300px;flex:1; }
+.lot-pick .btn-lot { font-size:11px;font-weight:600;padding:5px 10px;border-radius:5px;border:1px solid var(--accent-mid);background:var(--accent-light);color:var(--accent);cursor:pointer;white-space:nowrap; }
+.lot-pick .btn-lot:hover { background:var(--accent);color:#fff; }
 
 /* ── SAV Modal ── */
 .modal-bg { position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:500;display:none;align-items:center;justify-content:center; }
@@ -306,6 +313,11 @@ button,.btn { font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:var(
       <div class="form-section-label">Articles</div>
       <div class="sav-items" id="sav-items-list"></div>
       <button class="add-line-btn" onclick="addSavItem()" style="margin-bottom:4px;">+ Ajouter un article</button>
+      <div class="lot-pick">
+        <select class="lot-sel" id="sav-lotsel"></select>
+        <select id="sav-lottaille"><option value="S">S</option><option value="M" selected>M</option><option value="L">L</option></select>
+        <button class="btn-lot" onclick="ajouterLotSav()" title="Ajoute les joncs du lot, un SKU par ligne">+ Ajouter un lot</button>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeSavModal()">Annuler</button>
@@ -488,6 +500,104 @@ function renderSkuDatalist() {
 }
 renderSkuDatalist();
 
+// ── Base lots : composition en SKU ──
+// Relevée le 17/11/2026 sur baankumlai.com (métachamp custom.bk_lot rendu par bk-lot.liquid).
+// Les lots n'ont PAS de SKU chez Shopify, et ils n'en auront pas : le thème ajoute les joncs
+// un par un au panier, le lot lui-même n'arrive jamais dans une commande web. Mais une
+// commande saisie à la main (admin Shopify, commande pro) échappe à ce mécanisme : elle
+// arrive avec une ligne « Lot ... » sans SKU, que ce soft éclate ici en lignes préparables.
+// Compositions identiques d'une taille à l'autre : _T est remplacé par _S, _M ou _L.
+const lotCompositions = {
+  "lot-7-joncs-bouddhistes-multicolores": { titre:"Lot 7 Joncs Bouddhistes Multicolores", prix:"84.00", parts:[
+    {sku:"JONCCUIVRE_T",qty:1},{sku:"JONCROSE_T",qty:1},{sku:"JONC_CHOCO_T",qty:1},{sku:"JONC_VERTANTIQUE_T",qty:1},
+    {sku:"JONC_ORANTIQUE_T",qty:1},{sku:"JONC_ROSEPOUDRE_T",qty:1},{sku:"JONCARGENT_T",qty:1}] },
+  "lot-5-joncs-bouddhistes-chocolat-or-rose-rose-poudre": { titre:"Lot 5 Joncs Bouddhistes Chocolat, Or Rose & Rose Poudré", prix:"65.00", parts:[
+    {sku:"JONC_CHOCO_T",qty:2},{sku:"JONCROSE_T",qty:2},{sku:"JONC_ROSEPOUDRE_T",qty:1}] },
+  "lot-5-joncs-bouddhistes-vert-antique-chocolat-or-antique": { titre:"Lot 5 Joncs Bouddhistes Vert Antique, Chocolat & Or Antique", prix:"65.00", parts:[
+    {sku:"JONC_VERTANTIQUE_T",qty:2},{sku:"JONC_CHOCO_T",qty:2},{sku:"JONC_ORANTIQUE_T",qty:1}] },
+  "lot-5-joncs-bouddhistes-cuivre-or-antique-vert-antique-chocolat-or-rose": { titre:"Lot 5 Joncs Bouddhistes Cuivre, Or Antique, Vert Antique, Chocolat & Or Rose", prix:"65.00", parts:[
+    {sku:"JONCCUIVRE_T",qty:1},{sku:"JONC_ORANTIQUE_T",qty:1},{sku:"JONC_VERTANTIQUE_T",qty:1},{sku:"JONC_CHOCO_T",qty:1},{sku:"JONCROSE_T",qty:1}] },
+  "lot-5-bracelets-bouddhistes-argent-joncs-torsade-tresse": { titre:"Lot 5 Bracelets Bouddhistes Argent — Joncs, Torsadé & Tressé", prix:"81.48", parts:[
+    {sku:"JONCARGENT_T",qty:3},{sku:"JONCTORSADARGENT_T",qty:1},{sku:"JONC_ARGENT_TRESSE_T",qty:1}] },
+  "lot-5-bracelets-bouddhistes-or-joncs-torsade-tresse": { titre:"Lot 5 Bracelets Bouddhistes Or — Joncs, Torsadé & Tressé", prix:"81.48", parts:[
+    {sku:"JONCOR_T",qty:3},{sku:"JONCTORSADOR_T",qty:1},{sku:"JONC_OR_TRESSE_T",qty:1}] },
+  "lot-5-bracelets-bouddhistes-or-rose-joncs-torsade-tresse": { titre:"Lot 5 Bracelets Bouddhistes Or Rose — Joncs, Torsadé & Tressé", prix:"81.48", parts:[
+    {sku:"JONCROSE_T",qty:3},{sku:"JONC_ORROSE_TORSADE_T",qty:1},{sku:"JONC_ORROSE_TRESSE_T",qty:1}] },
+  "lot-5-bracelets-bouddhistes-or-cuivre-vert-antique-torsade-tresse": { titre:"Lot 5 Bracelets Bouddhistes Or, Cuivre & Vert Antique — Torsadé & Tressé", prix:"81.48", parts:[
+    {sku:"JONCOR_T",qty:1},{sku:"JONCTORSADOR_T",qty:1},{sku:"JONCCUIVRE_T",qty:1},{sku:"JONC_VERTANTIQUE_T",qty:1},{sku:"JONC_OR_TRESSE_T",qty:1}] },
+  "lot-5-bracelets-bouddhistes-chocolat-rose-poudre-or-rose-torsade-tresse": { titre:"Lot 5 Bracelets Bouddhistes Chocolat, Rose Poudré & Or Rose — Torsadé & Tressé", prix:"81.48", parts:[
+    {sku:"JONC_CHOCO_T",qty:2},{sku:"JONC_ROSEPOUDRE_T",qty:1},{sku:"JONC_ORROSE_TORSADE_T",qty:1},{sku:"JONC_ORROSE_TRESSE_T",qty:1}] },
+};
+const LOT_TAILLES = ['S','M','L'];
+
+// Titre normalisé (sans accent ni ponctuation) -> handle du lot
+const lotIndex = {};
+function normLot(v) {
+  return String(v==null?'':v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');
+}
+Object.keys(lotCompositions).forEach(h => { lotIndex[normLot(lotCompositions[h].titre)] = h; });
+
+// Reconnaît « Lot 5 Bracelets ... - M » dans un libellé de ligne Shopify
+function trouverLot(nom) {
+  const t = String(nom==null?'':nom).trim();
+  if (!t) return null;
+  const mt = t.match(/[-\u2013\u2014]\s*(XS|S|M|L|XL)\s*$/i);
+  const taille = mt ? mt[1].toUpperCase() : '';
+  const base = normLot(mt ? t.slice(0, mt.index) : t);
+  if (!base) return null;
+  const cles = Object.keys(lotIndex);
+  for (let i = 0; i < cles.length; i++) {
+    if (base === cles[i] || base.indexOf(cles[i]) === 0) return { handle: lotIndex[cles[i]], taille: taille };
+  }
+  return null;
+}
+
+// Lignes préparables d'un lot : [{sku, titre, qty}]
+function lignesDuLot(handle, taille, qty) {
+  const lot = lotCompositions[handle];
+  if (!lot) return [];
+  const t = LOT_TAILLES.indexOf(String(taille||'').toUpperCase()) > -1 ? String(taille).toUpperCase() : 'M';
+  const q = parseInt(qty, 10) || 1;
+  return lot.parts.map(p => {
+    const sku = p.sku.replace(/_T$/, '_' + t);
+    return { sku: sku, titre: skuTitles[sku] || '', qty: (p.qty || 1) * q };
+  });
+}
+
+function libelleLot(handle, taille) {
+  const lot = lotCompositions[handle];
+  return (lot ? lot.titre : handle) + (taille ? ' \u00b7 ' + taille : '');
+}
+
+function lotOptionsHTML() {
+  return Object.keys(lotCompositions)
+    .map(h => `<option value="${h}">${lotCompositions[h].titre} — ${lotCompositions[h].prix} €</option>`)
+    .join('');
+}
+
+// Remplace chaque ligne « Lot ... » sans SKU par ses composants. Renvoie le nombre de lots éclatés.
+function eclaterLots(o) {
+  let n = 0;
+  const out = [];
+  (o.items||[]).forEach(item => {
+    const sku = (item['Lineitem sku']||'').trim();
+    const trouve = sku ? null : trouverLot(item['Lineitem name']||'');
+    const parts = trouve ? lignesDuLot(trouve.handle, trouve.taille, item['Lineitem quantity']) : [];
+    if (!parts.length) { out.push(item); return; }
+    n++;
+    const libelle = libelleLot(trouve.handle, trouve.taille);
+    parts.forEach((p, i) => out.push(Object.assign({}, item, {
+      'Lineitem sku': p.sku,
+      'Lineitem name': p.titre,
+      'Lineitem quantity': p.qty,
+      'Lineitem price': i === 0 ? (item['Lineitem price']||'') : '0',
+      _sku: p.sku, _titre: p.titre, _qty: p.qty, _lot: libelle
+    })));
+  });
+  o.items = out;
+  return n;
+}
+
 // ── State ──
 let allOrders = {}, orderList = [], selected = new Set();
 let savItems = []; // items in the SAV modal
@@ -531,9 +641,13 @@ function buildOrders(rows) {
     if (allOrders[n].isSav) { selected.add(n); return; }
     if ((allOrders[n].header['Fulfillment Status']||'').toLowerCase() !== 'fulfilled') selected.add(n);
   });
+  let lotsEclates = 0;
+  orderList.forEach(n => { if (!allOrders[n].isSav) lotsEclates += eclaterLots(allOrders[n]); });
+
   renderOrders(); updateSummary();
   uploadZone.style.display = 'none';
-  toast(`✅ ${rows.length > 0 ? orderList.filter(n=>!allOrders[n].isSav).length : 0} commandes importées`);
+  const nbCmd = rows.length > 0 ? orderList.filter(n=>!allOrders[n].isSav).length : 0;
+  toast(`✅ ${nbCmd} commandes importées${lotsEclates ? ` · ${lotsEclates} lot${lotsEclates>1?'s':''} éclaté${lotsEclates>1?'s':''} en SKU` : ''}`);
 }
 
 // ── Transport ──
@@ -624,7 +738,8 @@ function renderOrderCard(n, container) {
       if (!item._titre) item._titre = titre;
       if (!item._qty) item._qty = qty;
       return `<div class="item-row" id="irow-${n.replace(/[^a-z0-9]/gi,'')}-${idx}">
-        <input class="item-sku-edit inp-sku" type="text" list="known-skus" value="${item._sku}" placeholder="SKU"
+        ${item._lot ? `<span class="item-lot-tag" title="Ligne issue du lot : ${escAttr(item._lot)}">LOT</span>` : ''}
+        <input class="item-sku-edit inp-sku${(item._sku||'').trim()?'':' sku-vide'}" type="text" list="known-skus" value="${item._sku}" placeholder="SKU"
           onchange="updateShopifyItem('${n}',${idx},'sku',this.value)"
           oninput="autoItemTitre('${n}',${idx},this.value,false)">
         <input class="item-name-edit inp-titre" type="text" value="${item._titre}" placeholder="Titre"
@@ -658,6 +773,11 @@ function renderOrderCard(n, container) {
       ${!o.isSav ? `
       <div class="extra-lines" id="extra-${n.replace(/[^a-z0-9]/gi,'')}"></div>
       <button class="add-line-btn" onclick="addExtraLine('${n}');event.stopPropagation();">+ Ajouter un article (cadeau, Sai Sin…)</button>
+      <div class="lot-pick" onclick="event.stopPropagation()">
+        <select class="lot-sel" id="lotsel-${n.replace(/[^a-z0-9]/gi,'')}">${lotOptionsHTML()}</select>
+        <select id="lottaille-${n.replace(/[^a-z0-9]/gi,'')}"><option value="S">S</option><option value="M" selected>M</option><option value="L">L</option></select>
+        <button class="btn-lot" onclick="ajouterLotEnLignes('${n}');event.stopPropagation();" title="Ajoute les joncs du lot, un SKU par ligne">+ Ajouter un lot</button>
+      </div>
       ` : ''}
     </div>`;
 
@@ -756,6 +876,24 @@ function addExtraLine(orderNum) {
   updateSummary();
 }
 
+// Ajoute un lot complet en lignes supplémentaires : un SKU par jonc, comme l'exige Dock Avenue
+function ajouterLotEnLignes(orderNum) {
+  const id = orderNum.replace(/[^a-z0-9]/gi,'');
+  const sel = document.getElementById(`lotsel-${id}`);
+  const selT = document.getElementById(`lottaille-${id}`);
+  if (!sel) return;
+  const taille = selT ? selT.value : 'M';
+  const parts = lignesDuLot(sel.value, taille, 1);
+  if (!parts.length) { toast('⚠️ Lot inconnu'); return; }
+  if (!allOrders[orderNum].extraLines) allOrders[orderNum].extraLines = [];
+  parts.forEach(p => allOrders[orderNum].extraLines.push({ sku:p.sku, titre:p.titre, qty:p.qty }));
+  const container = document.getElementById(`extra-${id}`);
+  if (container) container.innerHTML = '';
+  allOrders[orderNum].extraLines.forEach((_, i) => renderExtraLine(orderNum, i));
+  updateSummary();
+  toast(`✅ ${libelleLot(sel.value, taille)} — ${parts.length} lignes ajoutées`);
+}
+
 function renderExtraLine(orderNum, idx) {
   const line = allOrders[orderNum].extraLines[idx];
   const id = orderNum.replace(/[^a-z0-9]/gi,'');
@@ -766,7 +904,7 @@ function renderExtraLine(orderNum, idx) {
   const div = document.createElement('div');
   div.className = 'extra-line'; div.id = `el-${id}-${idx}`;
   div.innerHTML = `
-    <input class="inp-sku" type="text" list="known-skus" placeholder="SKU" value="${line.sku}"
+    <input class="inp-sku${(line.sku||'').trim()?'':' sku-vide'}" type="text" list="known-skus" placeholder="SKU" value="${line.sku}"
       onchange="updateExtraLine('${orderNum}',${idx},'sku',this.value)"
       oninput="autoFillTitre('${orderNum}',${idx},this.value)">
     <input class="inp-titre" type="text" placeholder="Titre article" value="${line.titre}"
@@ -813,6 +951,8 @@ function openSavModal() {
   });
   document.getElementById('sav-country').value = 'FR';
   document.getElementById('sav-transport').value = 'TRK';
+  const selLot = document.getElementById('sav-lotsel');
+  if (selLot && !selLot.options.length) selLot.innerHTML = lotOptionsHTML();
   document.getElementById('sav-modal').classList.add('open');
 }
 
@@ -821,6 +961,20 @@ function closeSavModal() { document.getElementById('sav-modal').classList.remove
 function addSavItem() {
   savItems.push({ sku:'', titre:'', qty:1 });
   renderSavItems();
+}
+
+// Commande manuelle : saisir un lot d'un coup, éclaté en un SKU par jonc
+function ajouterLotSav() {
+  const sel = document.getElementById('sav-lotsel');
+  const selT = document.getElementById('sav-lottaille');
+  if (!sel) return;
+  const taille = selT ? selT.value : 'M';
+  const parts = lignesDuLot(sel.value, taille, 1);
+  if (!parts.length) { toast('⚠️ Lot inconnu'); return; }
+  savItems = savItems.filter(i => i.sku || i.titre);
+  parts.forEach(p => savItems.push({ sku:p.sku, titre:p.titre, qty:p.qty }));
+  renderSavItems();
+  toast(`✅ ${libelleLot(sel.value, taille)} — ${parts.length} lignes ajoutées`);
 }
 
 function renderSavItems() {
@@ -975,6 +1129,24 @@ function generateAndDownload() {
 L'entrepôt risque de fusionner ces commandes.
 
 Générer quand même ?`)) return;
+
+  // Garde-fou : une ligne sans SKU n'est pas préparable par Dock Avenue
+  const sansSku = [];
+  selected.forEach(n => {
+    const o = allOrders[n];
+    (o.items||[]).forEach(item => {
+      const s = o.isSav ? (item.sku||'') : (item._sku || item['Lineitem sku'] || '');
+      if (!String(s).trim()) sansSku.push(`${getRef(n)} : ${o.isSav ? (item.titre||'?') : cleanTitre(item['Lineitem name']||'?')}`);
+    });
+    if (!o.isSav) (o.extraLines||[]).forEach(el => {
+      if (String(el.titre||'').trim() && !String(el.sku||'').trim()) sansSku.push(`${getRef(n)} : ${el.titre}`);
+    });
+  });
+  if (sansSku.length && !confirm(`Attention : ${sansSku.length} ligne(s) partiraient sans SKU.
+
+${sansSku.slice(0,8).join('\n')}${sansSku.length>8?'\n…':''}
+
+Dock Avenue ne peut pas préparer une ligne sans référence article (un lot, par exemple, doit être éclaté en joncs). Générer quand même ?`)) return;
 
   selected.forEach(n => {
     const o = allOrders[n]; const transport = getTransporteur(o);
