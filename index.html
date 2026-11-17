@@ -314,30 +314,8 @@ button,.btn { font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:var(
   </div>
 </div>
 
-<!-- Known SKUs — catalogue complet 51 produits -->
-<datalist id="known-skus">
-  <option value="BAGUE_ARGENT_M"><option value="BAGUEOR_M">
-  <option value="JONCTORSAD3C_S">
-  <option value="SAISINR"><option value="PACKSPIRITJ"><option value="PACKSPIRIT">
-  <option value="JONCARGENT_S"><option value="JONCARGENT_M"><option value="JONCARGENT_L"><option value="JONCARGENT_XL">
-  <option value="JONCFINARGENT_M"><option value="JONCFINARGENT_L">
-  <option value="JONCTORSADARGENT_M"><option value="JONCTORSADARGENT_L">
-  <option value="JONC_ARGENT_TRESSE_M"><option value="JONC_ARGENT_TRESSE_L">
-  <option value="JONCCHAMP_M"><option value="JONCCHAMP_L">
-  <option value="JONC_CHOCO_M"><option value="JONC_CHOCO_L">
-  <option value="JONCCUIVRE_M"><option value="JONCCUIVRE_L">
-  <option value="JONCOR_XS"><option value="JONCOR_S"><option value="JONCOR_M"><option value="JONCOR_L">
-  <option value="JONC_ORANTIQUE_M"><option value="JONC_ORANTIQUE_L">
-  <option value="JONCFINOR_XS"><option value="JONCFINOR_S"><option value="JONCFINOR_M"><option value="JONCFINOR_L">
-  <option value="JONCROSE_XS"><option value="JONCROSE_S"><option value="JONCROSE_M"><option value="JONCROSE_L">
-  <option value="JONC_ORROSE_FIN_M"><option value="JONC_ORROSE_FIN_L">
-  <option value="JONC_ORROSE_TORSADE_M"><option value="JONC_ORROSE_TORSADE_L">
-  <option value="JONC_ORROSE_TRESSE_M"><option value="JONC_ORROSE_TRESSE_L">
-  <option value="JONCTORSADOR_S"><option value="JONCTORSADOR_M"><option value="JONCTORSADOR_L">
-  <option value="JONC_OR_TRESSE_M"><option value="JONC_OR_TRESSE_L">
-  <option value="JONC_ROSEPOUDRE_M"><option value="JONC_ROSEPOUDRE_L">
-  <option value="JONC_VERTANTIQUE_M"><option value="JONC_VERTANTIQUE_L">
-</datalist>
+<!-- Known SKUs — rempli automatiquement depuis skuTitles (une seule liste à maintenir) -->
+<datalist id="known-skus"></datalist>
 
 <!-- Header -->
 <header class="app-header">
@@ -413,58 +391,102 @@ const TRANSPORT_OPTIONS = [
 
 // ── SKU catalogue complet ──
 const skuTitles = {
+  // ── Bagues ──
   "BAGUE_ARGENT_M":"Bague Bouddhiste Argent",
+  "BAGUE_ARGENT_L":"Bague Bouddhiste Argent",
+  "BAGUE_ARGENT_XL":"Bague Bouddhiste Argent",
   "BAGUEOR_M":"Bague Bouddhiste Or",
-  "JONCTORSAD3C_S":"Jonc Bouddhiste Torsadé 3 Couleurs",
-  "SAISINR":"Fil Rouge Sacré Bouddhiste",
-  "PACKSPIRITJ":"Ensemble Spirituel Bouddhiste – Yantra + Bracelet Rouge Sai Sin + Prière",
-  "PACKSPIRIT":"Ensemble Spirituel Bouddhiste – Yantra Jaune & Bracelet Rouge Sai Sin",
+  "BAGUEOR_L":"Bague Bouddhiste Or",
+  "BAGUEOR_XL":"Bague Bouddhiste Or",
+
+  // ── Joncs Argent ──
   "JONCARGENT_S":"Jonc Bouddhiste Argent",
   "JONCARGENT_M":"Jonc Bouddhiste Argent",
   "JONCARGENT_L":"Jonc Bouddhiste Argent",
-  "JONCARGENT_XL":"Jonc Bouddhiste Argent",
+  "JONCFINARGENT_S":"Jonc Bouddhiste Argent Fin",
   "JONCFINARGENT_M":"Jonc Bouddhiste Argent Fin",
   "JONCFINARGENT_L":"Jonc Bouddhiste Argent Fin",
+  "JONCTORSADARGENT_S":"Jonc Bouddhiste Argent Torsadé",
   "JONCTORSADARGENT_M":"Jonc Bouddhiste Argent Torsadé",
   "JONCTORSADARGENT_L":"Jonc Bouddhiste Argent Torsadé",
+  "JONC_ARGENT_TRESSE_S":"Jonc Bouddhiste Argent Tressé",
   "JONC_ARGENT_TRESSE_M":"Jonc Bouddhiste Argent Tressé",
   "JONC_ARGENT_TRESSE_L":"Jonc Bouddhiste Argent Tressé",
-  "JONCCHAMP_M":"Jonc Bouddhiste Champagne",
-  "JONCCHAMP_L":"Jonc Bouddhiste Champagne",
-  "JONC_CHOCO_M":"Jonc Bouddhiste Chocolat",
-  "JONC_CHOCO_L":"Jonc Bouddhiste Chocolat",
-  "JONCCUIVRE_M":"Jonc Bouddhiste Cuivre",
-  "JONCCUIVRE_L":"Jonc Bouddhiste Cuivre",
+
+  // ── Joncs Or ──
   "JONCOR_XS":"Jonc Bouddhiste Or",
   "JONCOR_S":"Jonc Bouddhiste Or",
   "JONCOR_M":"Jonc Bouddhiste Or",
   "JONCOR_L":"Jonc Bouddhiste Or",
-  "JONC_ORANTIQUE_M":"Jonc Bouddhiste Or Antique",
-  "JONC_ORANTIQUE_L":"Jonc Bouddhiste Or Antique",
   "JONCFINOR_XS":"Jonc Bouddhiste Or Fin",
   "JONCFINOR_S":"Jonc Bouddhiste Or Fin",
   "JONCFINOR_M":"Jonc Bouddhiste Or Fin",
   "JONCFINOR_L":"Jonc Bouddhiste Or Fin",
+  "JONCTORSADOR_S":"Jonc Bouddhiste Or Torsadé",
+  "JONCTORSADOR_M":"Jonc Bouddhiste Or Torsadé",
+  "JONCTORSADOR_L":"Jonc Bouddhiste Or Torsadé",
+  "JONC_OR_TRESSE_S":"Jonc Bouddhiste Or Tressé",
+  "JONC_OR_TRESSE_M":"Jonc Bouddhiste Or Tressé",
+  "JONC_OR_TRESSE_L":"Jonc Bouddhiste Or Tressé",
+  "JONC_ORANTIQUE_S":"Jonc Bouddhiste Or Antique",
+  "JONC_ORANTIQUE_M":"Jonc Bouddhiste Or Antique",
+  "JONC_ORANTIQUE_L":"Jonc Bouddhiste Or Antique",
+
+  // ── Joncs Or Rose ──
   "JONCROSE_XS":"Jonc Bouddhiste Or Rose",
   "JONCROSE_S":"Jonc Bouddhiste Or Rose",
   "JONCROSE_M":"Jonc Bouddhiste Or Rose",
   "JONCROSE_L":"Jonc Bouddhiste Or Rose",
+  "JONC_ORROSE_FIN_S":"Jonc Bouddhiste Or Rose Fin",
   "JONC_ORROSE_FIN_M":"Jonc Bouddhiste Or Rose Fin",
   "JONC_ORROSE_FIN_L":"Jonc Bouddhiste Or Rose Fin",
+  "JONC_ORROSE_TORSADE_S":"Jonc Bouddhiste Or Rose Torsadé",
   "JONC_ORROSE_TORSADE_M":"Jonc Bouddhiste Or Rose Torsadé",
   "JONC_ORROSE_TORSADE_L":"Jonc Bouddhiste Or Rose Torsadé",
+  "JONC_ORROSE_TRESSE_S":"Jonc Bouddhiste Or Rose Tressé",
   "JONC_ORROSE_TRESSE_M":"Jonc Bouddhiste Or Rose Tressé",
   "JONC_ORROSE_TRESSE_L":"Jonc Bouddhiste Or Rose Tressé",
-  "JONCTORSADOR_S":"Jonc Bouddhiste Or Torsadé",
-  "JONCTORSADOR_M":"Jonc Bouddhiste Or Torsadé",
-  "JONCTORSADOR_L":"Jonc Bouddhiste Or Torsadé",
-  "JONC_OR_TRESSE_M":"Jonc Bouddhiste Or Tressé",
-  "JONC_OR_TRESSE_L":"Jonc Bouddhiste Or Tressé",
+
+  // ── Joncs autres teintes ──
+  "JONCCHAMP_S":"Jonc Bouddhiste Champagne",
+  "JONCCHAMP_M":"Jonc Bouddhiste Champagne",
+  "JONCCHAMP_L":"Jonc Bouddhiste Champagne",
+  "JONC_CHOCO_S":"Jonc Bouddhiste Chocolat",
+  "JONC_CHOCO_M":"Jonc Bouddhiste Chocolat",
+  "JONC_CHOCO_L":"Jonc Bouddhiste Chocolat",
+  "JONCCUIVRE_S":"Jonc Bouddhiste Cuivre",
+  "JONCCUIVRE_M":"Jonc Bouddhiste Cuivre",
+  "JONCCUIVRE_L":"Jonc Bouddhiste Cuivre",
+  "JONC_ROSEPOUDRE_S":"Jonc Bouddhiste Rose Poudré",
   "JONC_ROSEPOUDRE_M":"Jonc Bouddhiste Rose Poudré",
   "JONC_ROSEPOUDRE_L":"Jonc Bouddhiste Rose Poudré",
+  "JONC_VERTANTIQUE_S":"Jonc Bouddhiste Vert Antique",
   "JONC_VERTANTIQUE_M":"Jonc Bouddhiste Vert Antique",
-  "JONC_VERTANTIQUE_L":"Jonc Bouddhiste Vert Antique"
+  "JONC_VERTANTIQUE_L":"Jonc Bouddhiste Vert Antique",
+
+  // ── Spirituel, pochettes, articles offerts ──
+  "SAISINR":"Fil Rouge Sacré Bouddhiste",
+  "PACKSPIRIT":"Ensemble Spirituel Bouddhiste – Yantra Jaune & Bracelet Rouge Sai Sin",
+  "JONC-OFFERT-TIRAGE":"Jonc Kumlaï au choix — Offert",
+  "POCHETTE-RANGEMENT-BK":"Pochette de rangement Bâan Kumlaï",
+  "POCHETTE-LIN-OFFERTE":"Pochette en lin — Offerte",
+  "SAC-ORGANZA-BEIGE":"Pochette cadeau en lin",
+
+  // ── Anciennes références : plus en ligne, gardées pour les SAV ──
+  "JONCTORSAD3C_S":"Jonc Bouddhiste Torsadé 3 Couleurs",
+  "PACKSPIRITJ":"Ensemble Spirituel Bouddhiste – Yantra + Bracelet Rouge Sai Sin + Prière",
+  "JONCARGENT_XL":"Jonc Bouddhiste Argent"
 };
+
+// Remplit la liste d'autocomplétion des SKU depuis la base article ci-dessus
+function renderSkuDatalist() {
+  const dl = document.getElementById('known-skus');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(skuTitles)
+    .map(sku => `<option value="${sku}">${skuTitles[sku]}</option>`)
+    .join('');
+}
+renderSkuDatalist();
 
 // ── State ──
 let allOrders = {}, orderList = [], selected = new Set();
